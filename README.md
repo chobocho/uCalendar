@@ -1,2 +1,2 @@
 # uCalendar
-Simple canlendar
+Simple calendar

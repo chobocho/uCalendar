@@ -1,0 +1,96 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: transparent; /* Wails 투명창 연동 */
+    font-family: sans-serif;
+    user-select: none;
+    overflow: hidden;
+}
+
+#app {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.nav-bar {
+    height: 40px;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    color: white;
+    -webkit-app-region: drag; /* 상단바 드래그 가능 */
+}
+
+button {
+    cursor: pointer;
+    -webkit-app-region: no-drag;
+}
+
+canvas {
+    flex: 1; /* 남은 공간 모두 차지 */
+    /* 배경을 약간 어둡게 해서 글자가 잘 보이게 */
+    background-color: rgba(255, 255, 255, 0.85);
+}
+
+/* 모달 스타일 */
+.hidden { display: none !important; }
+.modal {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+}
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 300px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+textarea { width: 100%; height: 80px; margin-top: 10px; }
+.button-group { margin-top: 10px; display: flex; justify-content: flex-end; gap: 5px; }
+.note-item {
+    display: flex; justify-content: space-between;
+    border-bottom: 1px solid #eee; padding: 5px 0;
+}
+.del-btn { color: red; cursor: pointer; border: none; background: none;}
+
+/* 상단바 스타일 업데이트 */
+.nav-bar {
+    height: 40px;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* 양쪽 끝 정렬 */
+    padding: 0 10px;
+    color: white;
+    -webkit-app-region: drag;
+}
+
+.nav-controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.exit-btn {
+    background-color: transparent;
+    border: 1px solid #ff4444;
+    color: #ff4444;
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-size: 12px;
+    -webkit-app-region: no-drag;
+}
+
+.exit-btn:hover {
+    background-color: #ff4444;
+    color: white;
+}
