@@ -37,7 +37,7 @@ func main() {
 			app.startup(ctx)
 			// 윈도우 생성 타이밍 이슈 방지를 위해 고루틴 + 약간의 딜레이 권장
 			go func() {
-				time.Sleep(500 * time.Millisecond)     // 안전마진
+				time.Sleep(300 * time.Millisecond)     // 안전마진
 				native.SetWindowToDesktop("uCalendar") // Wails App Title과 일치해야 함
 			}()
 		},
