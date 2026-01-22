@@ -1,5 +1,7 @@
 # uCalendar
-Simple calendar
+
+![screen_shot](./img/screen_shot.png)
+
 
 # How to build
 - Clone the repository
