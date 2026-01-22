@@ -1,10 +1,7 @@
 package main
 
 import (
-	"context"
 	"embed"
-	"time"
-	"uCalendar/native" // [중요] go.mod의 모듈명이 uCalendar여야 합니다.
 
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
@@ -28,21 +25,12 @@ func main() {
 		BackgroundColour: &options.RGBA{R: 0, G: 0, B: 0, A: 0},
 
 		// [중요] 창 테두리 제거 (위젯처럼 보이게)
-		Frameless: true,
+		// Frameless: true,
 
 		// [중요] 크기 조절 불가 (달력 모양 고정)
 		DisableResize: true,
-
-		OnStartup: func(ctx context.Context) {
-			app.startup(ctx)
-			// 윈도우 생성 타이밍 이슈 방지를 위해 고루틴 + 약간의 딜레이 권장
-			go func() {
-				time.Sleep(300 * time.Millisecond)     // 안전마진
-				native.SetWindowToDesktop("uCalendar") // Wails App Title과 일치해야 함
-			}()
-		},
-
-		Assets: assets,
+		OnStartup:     app.startup,
+		Assets:        assets,
 		Bind: []interface{}{
 			app,
 		},
