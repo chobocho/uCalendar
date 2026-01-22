@@ -106,26 +106,28 @@ function drawCanvas() {
 
     const headerHeight = 30;
     cellWidth = canvas.width / 7;
-    cellHeight = (canvas.height - headerHeight) / 6;
+    cellHeight = (canvas.height - headerHeight * 2) / 6;
 
     // [추가] 테마에 따른 색상 정의
     // 다크모드일 때 일반 글씨는 흰색(#ffffff), 라이트모드는 진한 회색(#212121)
     const baseTextColor = isDarkTheme ? '#ffffff' : '#212121';
-    const noteTextColor = isDarkTheme ? '#cccccc' : '#555555'; // 메모 색상
+    const noteTextColor = isDarkTheme ? '#cccccc' : '#000000'; // 메모 색상
     const dayHeaderColor = isDarkTheme ? '#dddddd' : '#424242';
-
+    const sundayColor = isDarkTheme ? '#FF003C' : '#e53935';
+    const saturdayColor = isDarkTheme ? '#00FFFF' : '#5c6bc0';
+    
     // 1. 요일 헤더
     const days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
     ctx.font = 'bold 12px sans-serif';
-    ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
     for(let i=0; i<7; i++) {
         const x = i * cellWidth + cellWidth/2;
         const y = headerHeight / 2;
 
-        if (i === 0) ctx.fillStyle = '#e53935';      // 빨강 (일요일)
-        else if (i === 6) ctx.fillStyle = '#5c6bc0'; // 파랑 (토요일 - 다크모드 가시성 위해 살짝 밝게 조정 추천, 여기선 #5c6bc0 or 기존 #3949ab)
+        ctx.textAlign = 'center';
+        if (i === 0) ctx.fillStyle = sundayColor;      // 빨강 (일요일)
+        else if (i === 6) ctx.fillStyle = saturdayColor; // 파랑 (토요일)
         else ctx.fillStyle = dayHeaderColor;         // [수정] 평일 헤더 색상 변수 사용
 
         ctx.fillText(days[i], x, y);
@@ -146,27 +148,59 @@ function drawCanvas() {
 
         // -- 날짜 숫자 --
         ctx.font = '16px sans-serif';
-        if (col === 0) ctx.fillStyle = '#e53935';
-        else if (col === 6) ctx.fillStyle = '#5c6bc0'; // [수정] 파랑색 약간 조정
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'top';
+
+        if (col === 0) ctx.fillStyle = sundayColor;
+        else if (col === 6) ctx.fillStyle = saturdayColor; // [수정] 파랑색 약간 조정
         else ctx.fillStyle = baseTextColor;            // [수정] 일반 날짜 색상 변수 사용
 
-        ctx.fillText(currentDrawDate, x + cellWidth/2, y + cellHeight/2 - 10);
+        ctx.fillText(currentDrawDate, x + 5, y + 5);
 
         // -- 메모 텍스트 --
         if (Array.isArray(notesData)) {
             const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(currentDrawDate).padStart(2, '0')}`;
-            const note = notesData.find(n => n.date === dateStr);
+            const matches = notesData.filter(n => n.date === dateStr);
 
-            if (note && note.content) {
-                ctx.font = '12px sans-serif';
+            if (matches.length > 0) {
+                ctx.font = '14px sans-serif';
                 ctx.fillStyle = noteTextColor; // [수정] 메모 색상 변수 사용
 
-                const displayText = fitText(ctx, note.content, cellWidth - 10);
-                ctx.fillText(displayText, x + cellWidth/2, y + cellHeight/2 + 15);
+                matches.forEach((note, idx) => {
+                    if (idx < 3) {
+                        if (note.content) {
+                            const __ret = isImportantMemo( note.content);
+                            const isImportant = __ret.isImportant;
+                            const content = __ret.content;
+
+                            ctx.fillStyle = isImportant ? sundayColor : noteTextColor; // [수정] !로 시작하면 빨간색
+                            const displayText = fitText(ctx, content, cellWidth - 10);
+                            ctx.fillText(displayText, x + 5, y + 25 + (idx * 15));
+                        }
+                    } else if (idx === 3) {
+                        ctx.fillStyle = noteTextColor;
+                        ctx.fillText('...', x + 5, y + 25 + (idx * 15));
+                    }
+                });
             }
         }
 
+        // -- 날짜 칸 테두리 --
+        ctx.strokeStyle = isDarkTheme ? '#555555' : '#dddddd';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(x, y, cellWidth, cellHeight);
+
         currentDrawDate++;
+    }
+
+    function isImportantMemo(content) {
+        let isImportant = false;
+
+        if (content.startsWith('!')) {
+            isImportant = true;
+            content = content.substring(1);
+        }
+        return {isImportant, content};
     }
 }
 // --- 인터랙션 ---
