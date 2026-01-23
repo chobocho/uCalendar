@@ -2,6 +2,7 @@ package main
 
 import (
 	"embed"
+	"time"
 
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
@@ -11,8 +12,12 @@ import (
 //go:embed all:frontend/dist
 var assets embed.FS
 
+func GetToday() string {
+	return time.Now().Format("2006-01-02")
+}
+
 func main() {
-	appTitle := "uCalendar"
+	appTitle := GetToday() + " : uCalendar V0.1"
 
 	app := NewApp()
 
