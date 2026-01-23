@@ -104,6 +104,12 @@ function drawCanvas() {
     const firstDayIndex = new Date(currentYear, currentMonth, 1).getDay();
     const lastDate = new Date(currentYear, currentMonth + 1, 0).getDate();
 
+    // [추가] 오늘 날짜 계산
+    const today = new Date();
+    const todayYear = today.getFullYear();
+    const todayMonth = today.getMonth();
+    const todayDate = today.getDate();
+
     const headerHeight = 30;
     cellWidth = canvas.width / 7;
     cellHeight = (canvas.height - headerHeight * 2) / 6;
@@ -190,6 +196,14 @@ function drawCanvas() {
         ctx.lineWidth = 1;
         ctx.strokeRect(x, y, cellWidth, cellHeight);
 
+        // [추가] 오늘 날짜면 파란색 굵은 2중 테두리
+        if (currentYear === todayYear && currentMonth === todayMonth && currentDrawDate === todayDate) {
+            ctx.strokeStyle = '#2196F3'; // 파란색
+            ctx.lineWidth = 2;
+            ctx.strokeRect(x + 2, y + 2, cellWidth - 4, cellHeight - 4);
+            ctx.strokeRect(x + 3, y + 3, cellWidth - 6, cellHeight - 6);
+        }
+
         currentDrawDate++;
     }
 
@@ -204,6 +218,20 @@ function drawCanvas() {
     }
 }
 // --- 인터랙션 ---
+
+// 현재 월로 이동
+window.backToThisMonth = () => {
+    const today = new Date();
+    const thisYear = today.getFullYear();
+    const thisMonth = today.getMonth();
+
+    if (thisYear == currentYear && thisMonth == currentMonth) {
+        return;
+    }
+    currentYear = thisYear;
+    currentMonth = thisMonth    ;
+    renderCalendar();
+};
 
 // 1. 월 이동
 window.changeMonth = (delta) => {
