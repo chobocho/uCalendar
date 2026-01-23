@@ -206,17 +206,18 @@ function drawCanvas() {
 
         currentDrawDate++;
     }
-
-    function isImportantMemo(content) {
-        let isImportant = false;
-
-        if (content.startsWith('!')) {
-            isImportant = true;
-            content = content.substring(1);
-        }
-        return {isImportant, content};
-    }
 }
+
+function isImportantMemo(content) {
+    let isImportant = false;
+
+    if (content.startsWith('!')) {
+        isImportant = true;
+        content = content.substring(1);
+    }
+    return {isImportant, content};
+}
+
 // --- 인터랙션 ---
 
 // 현재 월로 이동
@@ -299,22 +300,30 @@ window.closeModal = () => {
 };
 
 // 4. 저장 및 삭제 (Golang 호출)
+window.deleteNote = async (id) => {
+    if(confirm('Delete this note?')) {
+        await window.go.main.App.DeleteNote(id);
+        
+        // selectedDateStr에서 일(day)을 추출
+        const day = parseInt(selectedDateStr.split('-')[2]);
+        
+        await renderCalendar(); // 갱신 (데이터가 다시 로드될 때까지 기다림)
+        openModal(day); // 모달을 다시 열어줌
+    }
+};
+
 window.saveNote = async () => {
     const text = document.getElementById('noteInput').value;
     if(!text) return;
 
     await window.go.main.App.SaveNote(selectedDateStr, text);
-    closeModal();
-    renderCalendar(); // 다시 그려서 점 표시 갱신
-};
 
-window.deleteNote = async (id) => {
-    if(confirm('Delete this note?')) {
-        await window.go.main.App.DeleteNote(id);
-        closeModal(); // 닫고
-        renderCalendar(); // 갱신
-        // UX상 모달을 다시 열어주는 게 좋음 (여기선 생략)
-    }
+    // selectedDateStr에서 일(day)을 추출
+    const day = parseInt(selectedDateStr.split('-')[2]);
+
+    await renderCalendar(); 
+    openModal(day); // 저장 후 모달 유지
+    document.getElementById('noteInput').value = ''; // 입력창 비우기
 };
 
 // ✅ [추가] 앱 종료 함수
