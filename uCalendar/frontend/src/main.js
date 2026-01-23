@@ -226,7 +226,7 @@ window.backToThisMonth = () => {
     const thisYear = today.getFullYear();
     const thisMonth = today.getMonth();
 
-    if (thisYear == currentYear && thisMonth == currentMonth) {
+    if (thisYear === currentYear && thisMonth === currentMonth) {
         return;
     }
     currentYear = thisYear;
