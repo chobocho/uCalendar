@@ -80,6 +80,61 @@ async function renderCalendar() {
     drawCanvas();
 }
 
+
+// 공휴일 데이터 생성 함수
+function getHolidays(year) {
+    const holidays = {};
+
+    // (1) 양력 고정 공휴일
+    const solarHolidays = [
+        { date: '01-01', name: '신정' },
+        { date: '03-01', name: '삼일절' },
+        { date: '05-05', name: '어린이날' },
+        { date: '06-06', name: '현충일' },
+        { date: '08-15', name: '광복절' },
+        { date: '10-03', name: '개천절' },
+        { date: '10-09', name: '한글날' },
+        { date: '12-25', name: '크리스마스' }
+    ];
+
+    solarHolidays.forEach(h => {
+        holidays[`${year}-${h.date}`] = h.name;
+    });
+
+    // (2) 음력 공휴일 (설날, 추석, 부처님오신날 등)
+    // ※ 순수 JS만으로는 음력 계산이 매우 복잡하므로 주요 연도만 하드코딩 예시로 넣었습니다.
+    // 필요시 라이브러리를 쓰거나 API를 연동해야 정확합니다.
+    const lunarData = {
+        2024: {
+            '02-09': '설날 연휴', '02-10': '설날', '02-11': '설날 연휴', '02-12': '대체공휴일',
+            '04-10': '국회의원선거', '05-15': '부처님오신날', '05-06': '대체공휴일',
+            '09-16': '추석 연휴', '09-17': '추석', '09-18': '추석 연휴'
+        },
+        2025: {
+            '01-28': '설날 연휴', '01-29': '설날', '01-30': '설날 연휴', '03-03': '대체공휴일',
+            '05-05': '부처님오신날', '05-06': '대체공휴일', // 어린이날과 겹침
+            '10-05': '추석 연휴', '10-06': '추석', '10-07': '추석 연휴', '10-08': '대체공휴일'
+        },
+        2026: {
+            '02-16': '설날 연휴', '02-17': '설날', '02-18': '설날 연휴',
+            '05-24': '부처님오신날', '05-25': '대체공휴일',
+            '09-24': '추석 연휴', '09-25': '추석', '09-26': '추석 연휴'
+        }
+    };
+
+    if (lunarData[year]) {
+        Object.assign(holidays, (() => {
+            const formatted = {};
+            for (const [date, name] of Object.entries(lunarData[year])) {
+                formatted[`${year}-${date}`] = name;
+            }
+            return formatted;
+        })());
+    }
+
+    return holidays;
+};
+
 // [helper] 텍스트가 칸을 넘어가면 '...'을 붙여주는 함수
 function fitText(ctx, text, maxWidth) {
     let width = ctx.measureText(text).width;
@@ -103,6 +158,7 @@ function drawCanvas() {
 
     const firstDayIndex = new Date(currentYear, currentMonth, 1).getDay();
     const lastDate = new Date(currentYear, currentMonth + 1, 0).getDate();
+    const holidays = getHolidays(currentYear);
 
     // [추가] 오늘 날짜 계산
     const today = new Date();
@@ -151,21 +207,33 @@ function drawCanvas() {
 
         const x = col * cellWidth;
         const y = headerHeight + row * cellHeight;
+        const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(currentDrawDate).padStart(2, '0')}`;
+        const holidayName = holidays[dateStr];
 
         // -- 날짜 숫자 --
         ctx.font = '16px sans-serif';
         ctx.textAlign = 'left';
         ctx.textBaseline = 'top';
 
-        if (col === 0) ctx.fillStyle = sundayColor;
+        if (holidayName) ctx.fillStyle = sundayColor;
+        else if (col === 0) ctx.fillStyle = sundayColor;
         else if (col === 6) ctx.fillStyle = saturdayColor; // [수정] 파랑색 약간 조정
         else ctx.fillStyle = baseTextColor;            // [수정] 일반 날짜 색상 변수 사용
 
         ctx.fillText(currentDrawDate, x + 5, y + 5);
 
+        // -- Holiday label --
+        let noteStartY = y + 25;
+        if (holidayName) {
+            ctx.font = '12px sans-serif';
+            ctx.fillStyle = sundayColor;
+            const holidayText = fitText(ctx, holidayName, cellWidth - 10);
+            ctx.fillText(holidayText, x + 5, noteStartY);
+            noteStartY += 15;
+        }
+
         // -- 메모 텍스트 --
         if (Array.isArray(notesData)) {
-            const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(currentDrawDate).padStart(2, '0')}`;
             const matches = notesData.filter(n => n.date === dateStr);
 
             if (matches.length > 0) {
@@ -181,11 +249,11 @@ function drawCanvas() {
 
                             ctx.fillStyle = isImportant ? sundayColor : noteTextColor; // [수정] !로 시작하면 빨간색
                             const displayText = fitText(ctx, content, cellWidth - 10);
-                            ctx.fillText(displayText, x + 5, y + 25 + (idx * 15));
+                            ctx.fillText(displayText, x + 5, noteStartY + (idx * 15));
                         }
                     } else if (idx === 3) {
                         ctx.fillStyle = noteTextColor;
-                        ctx.fillText('...', x + 5, y + 25 + (idx * 15));
+                        ctx.fillText('...', x + 5, noteStartY + (idx * 15));
                     }
                 });
             }
@@ -220,16 +288,16 @@ function isImportantMemo(content) {
 
 // --- 인터랙션 ---
 window.showYearCalendar = () => {
-    const today = new Date();
-    const thisYear = today.getFullYear();
+    // 초기 연도 설정
+    let currentYear = new Date().getFullYear();
 
-    // 1. 기존에 열려있는 달력 모달이 있다면 제거 (중복 방지)
+    // 1. 기존 모달 제거 (중복 방지)
     const existingModal = document.getElementById('year-calendar-modal');
     if (existingModal) {
         existingModal.remove();
     }
 
-    // 2. CSS 스타일 정의 (동적으로 헤드에 추가)
+    // 2. CSS 스타일 정의 (공휴일 스타일 및 버튼 스타일 추가)
     const styleId = 'calendar-styles';
     if (!document.getElementById(styleId)) {
         const style = document.createElement('style');
@@ -239,54 +307,80 @@ window.showYearCalendar = () => {
                 position: fixed; top: 0; left: 0; width: 100%; height: 100%;
                 background-color: rgba(0, 0, 0, 0.5); z-index: 9999;
                 display: flex; justify-content: center; align-items: center;
-                font-family: Arial, sans-serif;
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             }
             .calendar-container {
-                background: white; width: 90%; max-width: 1000px; height: 80%;
-                border-radius: 8px; display: flex; flex-direction: column;
-                box-shadow: 0 4px 6px rgba(0,0,0,0.1); overflow: hidden;
+                background: white; width: 95%; max-width: 1100px; height: 85%;
+                border-radius: 12px; display: flex; flex-direction: column;
+                box-shadow: 0 10px 25px rgba(0,0,0,0.2); overflow: hidden;
             }
             .calendar-header {
-                padding: 15px; background: #333; color: white;
+                padding: 15px 20px; background: #2c3e50; color: white;
                 display: flex; justify-content: space-between; align-items: center;
+                user-select: none;
             }
+            .year-nav {
+                display: flex; align-items: center; gap: 15px; font-size: 1.5rem; font-weight: bold;
+            }
+            .nav-btn {
+                cursor: pointer; background: rgba(255,255,255,0.1); border: none;
+                color: white; padding: 5px 12px; border-radius: 4px; font-size: 1rem;
+                transition: background 0.2s;
+            }
+            .nav-btn:hover { background: rgba(255,255,255,0.3); }
             .close-btn {
-                cursor: pointer; font-size: 24px; font-weight: bold;
+                cursor: pointer; font-size: 28px; line-height: 1; opacity: 0.8;
             }
+            .close-btn:hover { opacity: 1; }
             .calendar-body {
                 padding: 20px; overflow-y: auto; flex: 1;
-                display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-                gap: 20px;
+                display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+                gap: 20px; background-color: #f8f9fa;
             }
             .month-card {
-                border: 1px solid #ddd; border-radius: 4px; padding: 10px;
+                background: white; border: 1px solid #eee; border-radius: 8px; 
+                padding: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
             }
             .month-title {
                 text-align: center; font-weight: bold; margin-bottom: 10px;
-                color: #333; font-size: 1.1em;
+                color: #2c3e50; font-size: 1.2em; border-bottom: 2px solid #f1f1f1; padding-bottom: 5px;
             }
             .days-grid {
                 display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center;
             }
             .day-name {
-                font-size: 0.8em; font-weight: bold; color: #666; margin-bottom: 5px;
+                font-size: 0.8em; font-weight: bold; color: #7f8c8d; margin-bottom: 5px;
             }
+            .day-name.sun { color: #e74c3c; } /* 일요일 헤더 빨강 */
+            .day-name.sat { color: #3498db; } /* 토요일 헤더 파랑 */
+            
             .day-cell {
-                font-size: 0.85em; padding: 4px;
+                font-size: 0.9em; padding: 6px 2px; border-radius: 4px; position: relative;
             }
+            .day-cell:hover { background-color: #f1f1f1; }
             .day-cell.today {
-                background-color: #007bff; color: white; border-radius: 50%;
+                background-color: #2c3e50; color: white; font-weight: bold;
             }
-            .day-cell.empty { background: transparent; }
+            .day-cell.holiday {
+                color: #e74c3c; font-weight: bold;
+            }
+            .day-cell.holiday-name {
+                display: block; font-size: 0.5em; margin-top: -2px; 
+                overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+                color: #e74c3c;
+            }
+            .day-cell.sat { color: #3498db; }
+            .day-cell.sun { color: #e74c3c; }
+            .day-cell.empty { background: transparent; pointer-events: none; }
         `;
         document.head.appendChild(style);
     }
 
-    // 3. 모달 구조 생성
+    // 4. 모달 기본 구조 생성
     const modal = document.createElement('div');
     modal.id = 'year-calendar-modal';
 
-    // 모달 배경 클릭 시 닫기
+    // 배경 클릭 닫기
     modal.addEventListener('click', (e) => {
         if (e.target === modal) modal.remove();
     });
@@ -294,67 +388,126 @@ window.showYearCalendar = () => {
     const container = document.createElement('div');
     container.className = 'calendar-container';
 
-    // 헤더 생성
+    // 헤더 영역
     const header = document.createElement('div');
     header.className = 'calendar-header';
-    header.innerHTML = `
-        <h2>📅 ${thisYear}년 전체 달력</h2>
-        <span class="close-btn">&times;</span>
-    `;
-    header.querySelector('.close-btn').onclick = () => modal.remove();
 
-    // 달력 본문 (월별 그리드)
+    // 연도 네비게이션
+    const navDiv = document.createElement('div');
+    navDiv.className = 'year-nav';
+
+    const prevBtn = document.createElement('button');
+    prevBtn.className = 'nav-btn';
+    prevBtn.innerText = '< 이전';
+
+    const yearTitle = document.createElement('span');
+    yearTitle.innerText = `${currentYear}년`;
+
+    const nextBtn = document.createElement('button');
+    nextBtn.className = 'nav-btn';
+    nextBtn.innerText = '다음 >';
+
+    navDiv.appendChild(prevBtn);
+    navDiv.appendChild(yearTitle);
+    navDiv.appendChild(nextBtn);
+
+    const closeBtn = document.createElement('div');
+    closeBtn.className = 'close-btn';
+    closeBtn.innerHTML = '&times;';
+    closeBtn.onclick = () => modal.remove();
+
+    header.appendChild(navDiv);
+    header.appendChild(closeBtn);
+
+    // 달력 본문 영역
     const body = document.createElement('div');
     body.className = 'calendar-body';
-
-    const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
-
-    // 4. 1월부터 12월까지 루프
-    for (let m = 0; m < 12; m++) {
-        const monthCard = document.createElement('div');
-        monthCard.className = 'month-card';
-
-        // 해당 월의 1일 날짜 객체
-        const firstDayOfMonth = new Date(thisYear, m, 1);
-        // 해당 월의 마지막 날짜 (다음 달의 0일 = 이번 달 마지막 날)
-        const lastDayOfMonth = new Date(thisYear, m + 1, 0);
-
-        const startDay = firstDayOfMonth.getDay(); // 1일의 요일 (0:일 ~ 6:토)
-        const totalDays = lastDayOfMonth.getDate(); // 이번 달의 총 일수
-
-        let html = `<div class="month-title">${m + 1}월</div>`;
-        html += `<div class="days-grid">`;
-
-        // 요일 헤더 (일~토)
-        dayNames.forEach(day => {
-            html += `<div class="day-name">${day}</div>`;
-        });
-
-        // 1일 앞의 빈칸 채우기
-        for (let i = 0; i < startDay; i++) {
-            html += `<div class="day-cell empty"></div>`;
-        }
-
-        // 날짜 채우기
-        for (let d = 1; d <= totalDays; d++) {
-            const isToday = (
-                today.getDate() === d &&
-                today.getMonth() === m &&
-                today.getFullYear() === thisYear
-            ) ? 'today' : '';
-
-            html += `<div class="day-cell ${isToday}">${d}</div>`;
-        }
-
-        html += `</div>`; // days-grid 닫기
-        monthCard.innerHTML = html;
-        body.appendChild(monthCard);
-    }
 
     container.appendChild(header);
     container.appendChild(body);
     modal.appendChild(container);
     document.body.appendChild(modal);
+
+    // 5. 달력 렌더링 함수 (핵심 로직)
+    const renderYearCalendar = (year) => {
+        body.innerHTML = ''; // 기존 내용 지우기
+        yearTitle.innerText = `${year}년`;
+
+        const holidays = getHolidays(year);
+        const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
+
+        // 1~12월 루프
+        for (let m = 0; m < 12; m++) {
+            const monthCard = document.createElement('div');
+            monthCard.className = 'month-card';
+
+            const firstDay = new Date(year, m, 1);
+            const lastDay = new Date(year, m + 1, 0);
+            const startDayIdx = firstDay.getDay();
+            const totalDays = lastDay.getDate();
+
+            let html = `<div class="month-title">${m + 1}월</div>`;
+            html += `<div class="days-grid">`;
+
+            // 요일 헤더
+            dayNames.forEach((day, idx) => {
+                const className = idx === 0 ? 'sun' : (idx === 6 ? 'sat' : '');
+                html += `<div class="day-name ${className}">${day}</div>`;
+            });
+
+            // 빈칸
+            for (let i = 0; i < startDayIdx; i++) {
+                html += `<div class="day-cell empty"></div>`;
+            }
+
+            // 날짜
+            for (let d = 1; d <= totalDays; d++) {
+                // 날짜 포맷 (YYYY-MM-DD)
+                const monthStr = String(m + 1).padStart(2, '0');
+                const dayStr = String(d).padStart(2, '0');
+                const dateKey = `${year}-${monthStr}-${dayStr}`;
+
+                const currentDayIdx = new Date(year, m, d).getDay(); // 0:일, 6:토
+
+                // 오늘 날짜 확인
+                const today = new Date();
+                const isToday = (today.getFullYear() === year && today.getMonth() === m && today.getDate() === d);
+
+                // 공휴일 확인
+                const holidayName = holidays[dateKey];
+
+                // 클래스 결정
+                let classes = ['day-cell'];
+                if (isToday) classes.push('today');
+                if (holidayName) classes.push('holiday');
+                else if (currentDayIdx === 0) classes.push('sun');
+                else if (currentDayIdx === 6) classes.push('sat');
+
+                html += `<div class="${classes.join(' ')}">
+                    ${d}
+                    ${holidayName ? `<span class="day-cell holiday-name">${holidayName}</span>` : ''}
+                </div>`;
+            }
+
+            html += `</div>`;
+            monthCard.innerHTML = html;
+            body.appendChild(monthCard);
+        }
+    };
+
+    // 6. 이벤트 연결 및 초기 실행
+    prevBtn.addEventListener('click', () => {
+        currentYear--;
+        renderYearCalendar(currentYear);
+    });
+
+    nextBtn.addEventListener('click', () => {
+        currentYear++;
+        renderYearCalendar(currentYear);
+    });
+
+    // 최초 렌더링
+    renderYearCalendar(currentYear);
 };
 
 // 현재 월로 이동
