@@ -219,6 +219,143 @@ function isImportantMemo(content) {
 }
 
 // --- 인터랙션 ---
+window.showYearCalendar = () => {
+    const today = new Date();
+    const thisYear = today.getFullYear();
+
+    // 1. 기존에 열려있는 달력 모달이 있다면 제거 (중복 방지)
+    const existingModal = document.getElementById('year-calendar-modal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+
+    // 2. CSS 스타일 정의 (동적으로 헤드에 추가)
+    const styleId = 'calendar-styles';
+    if (!document.getElementById(styleId)) {
+        const style = document.createElement('style');
+        style.id = styleId;
+        style.innerHTML = `
+            #year-calendar-modal {
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                background-color: rgba(0, 0, 0, 0.5); z-index: 9999;
+                display: flex; justify-content: center; align-items: center;
+                font-family: Arial, sans-serif;
+            }
+            .calendar-container {
+                background: white; width: 90%; max-width: 1000px; height: 80%;
+                border-radius: 8px; display: flex; flex-direction: column;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.1); overflow: hidden;
+            }
+            .calendar-header {
+                padding: 15px; background: #333; color: white;
+                display: flex; justify-content: space-between; align-items: center;
+            }
+            .close-btn {
+                cursor: pointer; font-size: 24px; font-weight: bold;
+            }
+            .calendar-body {
+                padding: 20px; overflow-y: auto; flex: 1;
+                display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 20px;
+            }
+            .month-card {
+                border: 1px solid #ddd; border-radius: 4px; padding: 10px;
+            }
+            .month-title {
+                text-align: center; font-weight: bold; margin-bottom: 10px;
+                color: #333; font-size: 1.1em;
+            }
+            .days-grid {
+                display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center;
+            }
+            .day-name {
+                font-size: 0.8em; font-weight: bold; color: #666; margin-bottom: 5px;
+            }
+            .day-cell {
+                font-size: 0.85em; padding: 4px;
+            }
+            .day-cell.today {
+                background-color: #007bff; color: white; border-radius: 50%;
+            }
+            .day-cell.empty { background: transparent; }
+        `;
+        document.head.appendChild(style);
+    }
+
+    // 3. 모달 구조 생성
+    const modal = document.createElement('div');
+    modal.id = 'year-calendar-modal';
+
+    // 모달 배경 클릭 시 닫기
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) modal.remove();
+    });
+
+    const container = document.createElement('div');
+    container.className = 'calendar-container';
+
+    // 헤더 생성
+    const header = document.createElement('div');
+    header.className = 'calendar-header';
+    header.innerHTML = `
+        <h2>📅 ${thisYear}년 전체 달력</h2>
+        <span class="close-btn">&times;</span>
+    `;
+    header.querySelector('.close-btn').onclick = () => modal.remove();
+
+    // 달력 본문 (월별 그리드)
+    const body = document.createElement('div');
+    body.className = 'calendar-body';
+
+    const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
+
+    // 4. 1월부터 12월까지 루프
+    for (let m = 0; m < 12; m++) {
+        const monthCard = document.createElement('div');
+        monthCard.className = 'month-card';
+
+        // 해당 월의 1일 날짜 객체
+        const firstDayOfMonth = new Date(thisYear, m, 1);
+        // 해당 월의 마지막 날짜 (다음 달의 0일 = 이번 달 마지막 날)
+        const lastDayOfMonth = new Date(thisYear, m + 1, 0);
+
+        const startDay = firstDayOfMonth.getDay(); // 1일의 요일 (0:일 ~ 6:토)
+        const totalDays = lastDayOfMonth.getDate(); // 이번 달의 총 일수
+
+        let html = `<div class="month-title">${m + 1}월</div>`;
+        html += `<div class="days-grid">`;
+
+        // 요일 헤더 (일~토)
+        dayNames.forEach(day => {
+            html += `<div class="day-name">${day}</div>`;
+        });
+
+        // 1일 앞의 빈칸 채우기
+        for (let i = 0; i < startDay; i++) {
+            html += `<div class="day-cell empty"></div>`;
+        }
+
+        // 날짜 채우기
+        for (let d = 1; d <= totalDays; d++) {
+            const isToday = (
+                today.getDate() === d &&
+                today.getMonth() === m &&
+                today.getFullYear() === thisYear
+            ) ? 'today' : '';
+
+            html += `<div class="day-cell ${isToday}">${d}</div>`;
+        }
+
+        html += `</div>`; // days-grid 닫기
+        monthCard.innerHTML = html;
+        body.appendChild(monthCard);
+    }
+
+    container.appendChild(header);
+    container.appendChild(body);
+    modal.appendChild(container);
+    document.body.appendChild(modal);
+};
 
 // 현재 월로 이동
 window.backToThisMonth = () => {
