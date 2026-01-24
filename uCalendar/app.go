@@ -105,6 +105,17 @@ func (a *App) SaveNote(date string, content string) string {
 	return "Saved"
 }
 
+func (a *App) UpdateNote(id int, content string) string {
+	if content == "" {
+		return "Content is empty"
+	}
+	_, err := a.db.Exec("UPDATE notes SET content = ? WHERE id = ?", content, id)
+	if err != nil {
+		return fmt.Sprintf("Error: %s", err)
+	}
+	return "Updated"
+}
+
 // DeleteNote: 메모 삭제
 func (a *App) DeleteNote(id int) string {
 	_, err := a.db.Exec("DELETE FROM notes WHERE id = ?", id)

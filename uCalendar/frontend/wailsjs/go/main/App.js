@@ -17,3 +17,7 @@ export function Quit() {
 export function SaveNote(arg1, arg2) {
   return window['go']['main']['App']['SaveNote'](arg1, arg2);
 }
+
+export function UpdateNote(arg1, arg2) {
+  return window['go']['main']['App']['UpdateNote'](arg1, arg2);
+}

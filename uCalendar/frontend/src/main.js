@@ -80,7 +80,6 @@ async function renderCalendar() {
     drawCanvas();
 }
 
-
 // 공휴일 데이터 생성 함수
 function getHolidays(year) {
     const holidays = {};
@@ -625,19 +624,40 @@ async function openModal(day) {
     notes.forEach(note => {
         const li = document.createElement('li');
         li.className = 'note-item';
-        li.innerHTML = `
-            <span>${note.content}</span>
-            <button class="del-btn" onclick="deleteNote(${note.id})">X</button>
-        `;
+
+        const checkBtn = document.createElement('button');
+        checkBtn.className = 'check-btn';
+        checkBtn.textContent = '\u2714\uFE0F';
+        checkBtn.addEventListener('click', () => checkNote(note.id, note.content));
+
+        const contentSpan = document.createElement('span');
+        contentSpan.textContent = note.content;
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'del-btn';
+        deleteBtn.textContent = '\u274C';
+        deleteBtn.addEventListener('click', () => deleteNote(note.id));
+
+        li.append(checkBtn, contentSpan, deleteBtn);
         listEl.appendChild(li);
     });
-
     document.getElementById('noteModal').classList.remove('hidden');
 }
 
 window.closeModal = () => {
     document.getElementById('noteModal').classList.add('hidden');
     document.getElementById('noteInput').value = '';
+};
+
+window.checkNote = async (id, text) => {
+    const checkBtn = '\u2705';
+    if (text.startsWith(checkBtn)) text = text.substring(1);
+    else text = checkBtn + text;
+    await window.go.main.App.UpdateNote(id, text);
+    // selectedDateStr에서 일(day)을 추출
+    const day = parseInt(selectedDateStr.split('-')[2]);
+    await renderCalendar(); // 갱신 (데이터가 다시 로드될 때까지 기다림)
+    openModal(day); // 모달을 다시 열어줌
 };
 
 // 4. 저장 및 삭제 (Golang 호출)
