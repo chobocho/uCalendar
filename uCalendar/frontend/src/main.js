@@ -339,7 +339,7 @@ function isImportantMemo(content) {
 // --- 인터랙션 ---
 window.showYearCalendar = () => {
     // 초기 연도 설정
-    let currentYear = new Date().getFullYear();
+    let yearViewYear = new Date().getFullYear();
 
     // 1. 기존 모달 제거 (중복 방지)
     const existingModal = document.getElementById('year-calendar-modal');
@@ -390,6 +390,7 @@ window.showYearCalendar = () => {
             .month-card {
                 background: white; border: 1px solid #eee; border-radius: 8px; 
                 padding: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+                cursor: pointer;
             }
             .month-title {
                 text-align: center; font-weight: bold; margin-bottom: 10px;
@@ -451,7 +452,7 @@ window.showYearCalendar = () => {
     prevBtn.innerText = '< 이전';
 
     const yearTitle = document.createElement('span');
-    yearTitle.innerText = `${currentYear}년`;
+    yearTitle.innerText = `${yearViewYear}년`;
 
     const nextBtn = document.createElement('button');
     nextBtn.className = 'nav-btn';
@@ -490,6 +491,12 @@ window.showYearCalendar = () => {
         for (let m = 0; m < 12; m++) {
             const monthCard = document.createElement('div');
             monthCard.className = 'month-card';
+            monthCard.addEventListener('click', () => {
+                currentYear = year;
+                currentMonth = m;
+                modal.remove();
+                renderCalendar();
+            });
 
             const firstDay = new Date(year, m, 1);
             const lastDay = new Date(year, m + 1, 0);
@@ -547,17 +554,17 @@ window.showYearCalendar = () => {
 
     // 6. 이벤트 연결 및 초기 실행
     prevBtn.addEventListener('click', () => {
-        currentYear--;
-        renderYearCalendar(currentYear);
+        yearViewYear--;
+        renderYearCalendar(yearViewYear);
     });
 
     nextBtn.addEventListener('click', () => {
-        currentYear++;
-        renderYearCalendar(currentYear);
+        yearViewYear++;
+        renderYearCalendar(yearViewYear);
     });
 
     // 최초 렌더링
-    renderYearCalendar(currentYear);
+    renderYearCalendar(yearViewYear);
 };
 
 // 현재 월로 이동
@@ -663,7 +670,7 @@ window.checkNote = async (id, text) => {
 
 // 4. 저장 및 삭제 (Golang 호출)
 window.deleteNote = async (id) => {
-    if(confirm('Delete this note?')) {
+    if(confirm('할 일을 삭제 하시겠습니까?')) {
         await window.go.main.App.DeleteNote(id);
         
         // selectedDateStr에서 일(day)을 추출
