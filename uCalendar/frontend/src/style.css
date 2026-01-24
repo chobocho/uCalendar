@@ -94,6 +94,10 @@ textarea { width: 100%; height: 80px; margin-top: 10px; }
     display: flex; justify-content: space-between;
     border-bottom: 1px solid #eee; padding: 5px 0;
 }
+.note-content {
+    flex: 1;
+    text-align: left;
+}
 .check-btn { color: blue; cursor: pointer; border: none; background: none;}
 .del-btn { color: red; cursor: pointer; border: none; background: none;}
 

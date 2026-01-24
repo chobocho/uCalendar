@@ -631,6 +631,7 @@ async function openModal(day) {
         checkBtn.addEventListener('click', () => checkNote(note.id, note.content));
 
         const contentSpan = document.createElement('span');
+        contentSpan.className = 'note-content';
         contentSpan.textContent = note.content;
 
         const deleteBtn = document.createElement('button');
