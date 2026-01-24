@@ -291,7 +291,7 @@ function drawCanvas() {
                 ctx.fillStyle = noteTextColor; // [수정] 메모 색상 변수 사용
 
                 matches.forEach((note, idx) => {
-                    if (idx < 3) {
+                    if (idx < 4) {
                         if (note.content) {
                             const __ret = isImportantMemo( note.content);
                             const isImportant = __ret.isImportant;
@@ -301,9 +301,12 @@ function drawCanvas() {
                             const displayText = fitText(ctx, content, cellWidth - 10);
                             ctx.fillText(displayText, x + 5, noteStartY + (idx * 15));
                         }
-                    } else if (idx === 3) {
+                    } else if (idx >= 4 && idx < 11) {
                         ctx.fillStyle = noteTextColor;
-                        ctx.fillText('...', x + 5, noteStartY + (idx * 15));
+                        ctx.fillText('🔵', x + (idx - 4) * 15, noteStartY + (4 * 15));
+                    } else if (idx === 11) {
+                        ctx.fillStyle = noteTextColor;
+                        ctx.fillText('⭕', x + (idx - 4) * 15, noteStartY + (4 * 15));
                     }
                 });
             }
@@ -644,7 +647,7 @@ async function openModal(day) {
         const deleteBtn = document.createElement('button');
         deleteBtn.className = 'del-btn';
         deleteBtn.textContent = '\u274C';
-        deleteBtn.addEventListener('click', () => deleteNote(note.id));
+        deleteBtn.addEventListener('click', () => deleteNote(note.id, note.content));
 
         li.append(checkBtn, contentSpan, deleteBtn);
         listEl.appendChild(li);
@@ -669,8 +672,8 @@ window.checkNote = async (id, text) => {
 };
 
 // 4. 저장 및 삭제 (Golang 호출)
-window.deleteNote = async (id) => {
-    if(confirm('할 일을 삭제 하시겠습니까?')) {
+window.deleteNote = async (id, text) => {
+    if(confirm(`${text}\n\n메모를 삭제 하시겠습니까?`)) {
         await window.go.main.App.DeleteNote(id);
         
         // selectedDateStr에서 일(day)을 추출
