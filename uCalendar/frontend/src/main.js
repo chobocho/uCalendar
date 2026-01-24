@@ -416,7 +416,7 @@ window.showYearCalendar = () => {
                 color: #e74c3c; font-weight: bold;
             }
             .day-cell.holiday-name {
-                display: block; font-size: 0.5em; margin-top: -2px; 
+                display: block; font-size: 0.4em; margin-top: -2px; 
                 overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
                 color: #e74c3c;
             }
