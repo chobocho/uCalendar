@@ -381,10 +381,10 @@ window.showYearCalendar = () => {
                 transition: background 0.2s;
             }
             .nav-btn:hover { background: rgba(255,255,255,0.3); }
-            .close-btn {
+            .year-close-btn {
                 cursor: pointer; font-size: 28px; line-height: 1; opacity: 0.8;
             }
-            .close-btn:hover { opacity: 1; }
+            .year-close-btn:hover { opacity: 1; }
             .calendar-body {
                 padding: 20px; overflow-y: auto; flex: 1;
                 display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -466,7 +466,7 @@ window.showYearCalendar = () => {
     navDiv.appendChild(nextBtn);
 
     const closeBtn = document.createElement('div');
-    closeBtn.className = 'close-btn';
+    closeBtn.className = 'year-close-btn';
     closeBtn.innerHTML = '&times;';
     closeBtn.onclick = () => modal.remove();
 

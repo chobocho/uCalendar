@@ -17,7 +17,7 @@ func GetToday() string {
 }
 
 func main() {
-	appVersion := "0.12"
+	appVersion := "v0.12"
 	appTitle := GetToday() + " : uCalendar " + appVersion
 
 	app := NewApp()
