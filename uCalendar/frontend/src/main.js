@@ -644,12 +644,17 @@ async function openModal(day) {
         contentSpan.className = 'note-content';
         contentSpan.textContent = note.content;
 
+        const editBtn = document.createElement('button');
+        editBtn.className = 'edit-btn';
+        editBtn.textContent = '✒️';
+        editBtn.addEventListener('click', () => editNote(note.id, note.content));
+
         const deleteBtn = document.createElement('button');
         deleteBtn.className = 'del-btn';
         deleteBtn.textContent = '\u274C';
         deleteBtn.addEventListener('click', () => deleteNote(note.id, note.content));
 
-        li.append(checkBtn, contentSpan, deleteBtn);
+        li.append(checkBtn, contentSpan, editBtn, deleteBtn);
         listEl.appendChild(li);
     });
     document.getElementById('noteModal').classList.remove('hidden');
@@ -669,6 +674,21 @@ window.checkNote = async (id, text) => {
     const day = parseInt(selectedDateStr.split('-')[2]);
     await renderCalendar(); // 갱신 (데이터가 다시 로드될 때까지 기다림)
     openModal(day); // 모달을 다시 열어줌
+};
+
+window.editNote = async (id, text) => {
+    const nextContent = prompt('일정 수정 하기', text);
+    if (nextContent === null || !nextContent.trim() ){
+        alert('빈 일정으로 수정할 수 없습니다.');
+        return;
+    }
+
+    await window.go.main.App.UpdateNote(id, nextContent);
+
+    const day = parseInt(selectedDateStr.split('-')[2]);
+
+    await renderCalendar();
+    openModal(day);
 };
 
 // 4. 저장 및 삭제 (Golang 호출)
