@@ -1,4 +1,4 @@
-// 상태 변수
+﻿// 상태 변수
 let currentDate = new Date();
 let currentYear = currentDate.getFullYear();
 let currentMonth = currentDate.getMonth(); // 0 ~ 11
@@ -6,6 +6,8 @@ let notesData = []; // 현재 달의 메모들
 let canvas, ctx;
 let cellWidth, cellHeight;
 let selectedDateStr = "";
+let noteHoverTargets = [];
+let noteTooltipEl = null;
 
 // [추가] 다크 테마 상태 변수
 let isDarkTheme = false;
@@ -19,6 +21,8 @@ window.onload = () => {
 
     window.addEventListener('resize', resizeCanvas);
     canvas.addEventListener('click', onCanvasClick);
+    canvas.addEventListener('mousemove', onCanvasHover);
+    canvas.addEventListener('mouseleave', hideNoteTooltip);
 
     // [중요] Wails 런타임이 준비될 때까지 기다렸다가 실행
     if (window.go && window.go.main && window.go.main.App) {
@@ -205,6 +209,7 @@ function fitText(ctx, text, maxWidth) {
 
 function drawCanvas() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    noteHoverTargets = [];
 
     const firstDayIndex = new Date(currentYear, currentMonth, 1).getDay();
     const lastDate = new Date(currentYear, currentMonth + 1, 0).getDate();
@@ -301,12 +306,20 @@ function drawCanvas() {
                             const displayText = fitText(ctx, content, cellWidth - 10);
                             ctx.fillText(displayText, x + 5, noteStartY + (idx * 15));
                         }
-                    } else if (idx >= 4 && idx < 11) {
+                    } else if (idx >= 4 && idx < 12) {
                         ctx.fillStyle = noteTextColor;
-                        ctx.fillText('🔵', x + (idx - 4) * 15, noteStartY + (4 * 15));
-                    } else if (idx === 11) {
-                        ctx.fillStyle = noteTextColor;
-                        ctx.fillText('⭕', x + (idx - 4) * 15, noteStartY + (4 * 15));
+                        const dotX = x + (idx - 4) * 15;
+                        const dotY = noteStartY + (4 * 15);
+                        ctx.fillText(idx === 11 ? '⭕' : '🔵', dotX, dotY);
+                        if (note.content) {
+                            noteHoverTargets.push({
+                                x: dotX - 2,
+                                y: dotY - 2,
+                                w: 14,
+                                h: 14,
+                                text: note.content
+                            });
+                        }
                     }
                 });
             }
@@ -337,6 +350,48 @@ function isImportantMemo(content) {
         content = content.substring(1);
     }
     return {isImportant, content};
+}
+
+function ensureNoteTooltip() {
+    if (noteTooltipEl) return;
+    noteTooltipEl = document.createElement('div');
+    noteTooltipEl.id = 'note-tooltip';
+    noteTooltipEl.className = 'hidden';
+    document.body.appendChild(noteTooltipEl);
+}
+
+function showNoteTooltip(text, clientX, clientY) {
+    ensureNoteTooltip();
+    noteTooltipEl.textContent = text;
+    noteTooltipEl.style.left = `${clientX + 12}px`;
+    noteTooltipEl.style.top = `${clientY + 12}px`;
+    noteTooltipEl.classList.remove('hidden');
+}
+
+function hideNoteTooltip() {
+    if (!noteTooltipEl) return;
+    noteTooltipEl.classList.add('hidden');
+}
+
+function onCanvasHover(e) {
+    if (!noteHoverTargets.length) {
+        hideNoteTooltip();
+        return;
+    }
+
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+
+    const target = noteHoverTargets.find(t =>
+        mouseX >= t.x &&
+        mouseX <= t.x + t.w &&
+        mouseY >= t.y &&
+        mouseY <= t.y + t.h
+    );
+
+    if (target) showNoteTooltip(target.text, e.clientX, e.clientY);
+    else hideNoteTooltip();
 }
 
 // --- 인터랙션 ---
@@ -727,3 +782,4 @@ window.quitApp = () => {
         window.go.main.App.Quit();
     }
 };
+
