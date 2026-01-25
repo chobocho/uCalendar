@@ -12,6 +12,14 @@ let noteTooltipEl = null;
 // [추가] 다크 테마 상태 변수
 let isDarkTheme = false;
 
+function updateThemeToggleIcon() {
+    const toggleBtn = document.querySelector('button[onclick="toggleTheme()"]');
+    if (!toggleBtn) return;
+
+    toggleBtn.textContent = isDarkTheme ? '☀️' : '🌙';
+    toggleBtn.title = isDarkTheme ? '라이트 테마로 변경' : '다크 테마로 변경';
+}
+
 // Wails 런타임이 준비되면 실행
 // (Wails JS 바인딩은 window.go.main.App 아래에 생성됩니다)
 
@@ -50,6 +58,8 @@ window.toggleTheme = () => {
 
     // 캔버스 다시 그리기 (글자색 변경 적용)
     drawCanvas();
+
+    updateThemeToggleIcon();
 };
 
 function resizeCanvas() {
