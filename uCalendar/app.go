@@ -93,6 +93,28 @@ func (a *App) GetNotesByMonth(yearMonth string) []Note {
 	return notes
 }
 
+// GetAllNotes: fetch all notes for search.
+func (a *App) GetAllNotes() []Note {
+	rows, err := a.db.Query("SELECT id, date, content FROM notes ORDER BY date ASC, id ASC")
+	if err != nil {
+		log.Println("Query Error:", err)
+		return []Note{}
+	}
+	defer rows.Close()
+
+	var notes []Note
+	for rows.Next() {
+		var n Note
+		err = rows.Scan(&n.ID, &n.Date, &n.Content)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+		notes = append(notes, n)
+	}
+	return notes
+}
+
 // SaveNote: 메모 저장
 func (a *App) SaveNote(date string, content string) string {
 	if content == "" {

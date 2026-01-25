@@ -3,11 +3,16 @@ let currentDate = new Date();
 let currentYear = currentDate.getFullYear();
 let currentMonth = currentDate.getMonth(); // 0 ~ 11
 let notesData = []; // 현재 달의 메모들
+let allNotesData = []; // 전체 메모 (검색용)
 let canvas, ctx;
 let cellWidth, cellHeight;
 let selectedDateStr = "";
 let noteHoverTargets = [];
 let noteTooltipEl = null;
+let searchPanelEl = null;
+let searchInputEl = null;
+let searchResultsEl = null;
+let searchEmptyEl = null;
 
 // [추가] 다크 테마 상태 변수
 let isDarkTheme = false;
@@ -46,6 +51,14 @@ window.onload = () => {
     }
 };
 
+window.showSearchPanel = () => {
+    if (!searchPanelEl) return;
+    searchPanelEl.classList.remove('hidden');
+    searchInputEl.focus();
+    searchInputEl.select();
+    updateSearchResults();
+}
+
 window.toggleTheme = () => {
     isDarkTheme = !isDarkTheme;
 
@@ -71,6 +84,8 @@ function resizeCanvas() {
 
 function initApp() {
     resizeCanvas();
+    setupSearchUI();
+    refreshAllNotes();
     // 초기 실행
     renderCalendar();
 }
@@ -92,6 +107,106 @@ async function renderCalendar() {
 
     // 그리기
     drawCanvas();
+}
+
+function setupSearchUI() {
+    searchPanelEl = document.getElementById('search-panel');
+    searchInputEl = document.getElementById('searchInput');
+    searchResultsEl = document.getElementById('searchResults');
+    searchEmptyEl = document.getElementById('searchEmpty');
+
+    if (!searchPanelEl || !searchInputEl || !searchResultsEl || !searchEmptyEl) return;
+
+    document.addEventListener('keydown', (e) => {
+        const isFindShortcut = (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'f';
+        if (isFindShortcut) {
+            e.preventDefault();
+            showSearchPanel();
+            return;
+        }
+        if (e.key === 'Escape') {
+            hideSearchPanel();
+        }
+    });
+
+    searchInputEl.addEventListener('input', updateSearchResults);
+    searchResultsEl.addEventListener('click', (e) => {
+        const item = e.target.closest('li[data-date]');
+        if (!item) return;
+        const dateStr = item.dataset.date;
+        const parts = dateStr.split('-');
+        if (parts.length !== 3) return;
+        currentYear = parseInt(parts[0], 10);
+        currentMonth = parseInt(parts[1], 10) - 1;
+        renderCalendar();
+        hideSearchPanel();
+    });
+
+    const closeBtn = document.getElementById('searchCloseBtn');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', hideSearchPanel);
+    }
+}
+
+function hideSearchPanel() {
+    if (!searchPanelEl) return;
+    searchPanelEl.classList.add('hidden');
+}
+
+async function refreshAllNotes() {
+    if (!window.go || !window.go.main || !window.go.main.App) return;
+    try {
+        const result = await window.go.main.App.GetAllNotes();
+        allNotesData = Array.isArray(result) ? result : [];
+    } catch (e) {
+        allNotesData = [];
+    }
+    updateSearchResults();
+}
+
+function updateSearchResults() {
+    if (!searchInputEl || !searchResultsEl || !searchEmptyEl) return;
+    const query = searchInputEl.value.trim().toLowerCase();
+    if (!query) {
+        renderSearchEmpty('검색어를 넣어 주세요');
+        return;
+    }
+
+    const results = allNotesData
+        .filter((note) => (note.content || '').toLowerCase().includes(query))
+        .sort((a, b) => (a.date || '').localeCompare(b.date || '') || a.id - b.id);
+
+    if (!results.length) {
+        renderSearchEmpty('일치하는 일정이 없습니다.');
+        return;
+    }
+
+    searchResultsEl.innerHTML = '';
+    searchEmptyEl.classList.add('hidden');
+
+    results.forEach((note) => {
+        const li = document.createElement('li');
+        li.className = 'search-result-item';
+        li.dataset.date = note.date;
+
+        const dateSpan = document.createElement('span');
+        dateSpan.className = 'search-result-date';
+        dateSpan.textContent = note.date;
+
+        const contentSpan = document.createElement('span');
+        contentSpan.className = 'search-result-content';
+        const content = (note.content && note.content.startsWith('!')) ? note.content.substring(1) : note.content;
+        contentSpan.textContent = content || '';
+
+        li.append(dateSpan, contentSpan);
+        searchResultsEl.appendChild(li);
+    });
+}
+
+function renderSearchEmpty(message) {
+    searchResultsEl.innerHTML = '';
+    searchEmptyEl.textContent = message;
+    searchEmptyEl.classList.remove('hidden');
 }
 
 // 공휴일 데이터 생성 함수
@@ -741,6 +856,7 @@ window.checkNote = async (id, text) => {
     // selectedDateStr에서 일(day)을 추출
     const day = parseInt(selectedDateStr.split('-')[2]);
     await renderCalendar(); // 갱신 (데이터가 다시 로드될 때까지 기다림)
+    await refreshAllNotes();
     openModal(day); // 모달을 다시 열어줌
 };
 
@@ -756,6 +872,7 @@ window.editNote = async (id, text) => {
     const day = parseInt(selectedDateStr.split('-')[2]);
 
     await renderCalendar();
+    await refreshAllNotes();
     openModal(day);
 };
 
@@ -768,6 +885,7 @@ window.deleteNote = async (id, text) => {
         const day = parseInt(selectedDateStr.split('-')[2]);
         
         await renderCalendar(); // 갱신 (데이터가 다시 로드될 때까지 기다림)
+        await refreshAllNotes();
         openModal(day); // 모달을 다시 열어줌
     }
 };
@@ -782,6 +900,7 @@ window.saveNote = async () => {
     const day = parseInt(selectedDateStr.split('-')[2]);
 
     await renderCalendar(); 
+    await refreshAllNotes();
     openModal(day); // 저장 후 모달 유지
     document.getElementById('noteInput').value = ''; // 입력창 비우기
 };
