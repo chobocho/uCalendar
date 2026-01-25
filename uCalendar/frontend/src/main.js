@@ -638,6 +638,7 @@ async function openModal(day) {
         const checkBtn = document.createElement('button');
         checkBtn.className = 'check-btn';
         checkBtn.textContent = '\u2714\uFE0F';
+        checkBtn.title = '완료 표시';
         checkBtn.addEventListener('click', () => checkNote(note.id, note.content));
 
         const contentSpan = document.createElement('span');
@@ -647,11 +648,13 @@ async function openModal(day) {
         const editBtn = document.createElement('button');
         editBtn.className = 'edit-btn';
         editBtn.textContent = '✒️';
+        editBtn.title = '노트 편집';
         editBtn.addEventListener('click', () => editNote(note.id, note.content));
 
         const deleteBtn = document.createElement('button');
         deleteBtn.className = 'del-btn';
         deleteBtn.textContent = '\u274C';
+        deleteBtn.title = '노트 삭제';
         deleteBtn.addEventListener('click', () => deleteNote(note.id, note.content));
 
         li.append(checkBtn, contentSpan, editBtn, deleteBtn);
