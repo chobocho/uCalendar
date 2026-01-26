@@ -378,6 +378,61 @@ function drawCanvas() {
     // 2. 날짜 및 메모 그리기
     let currentDrawDate = 1;
 
+    function drawNote(notes, maxShowNotes, x, noteStartY) {
+        if (notes.length > 0) {
+            notes.forEach((note, idx) => {
+                if (idx < maxShowNotes || (idx === maxShowNotes && notes.length === (maxShowNotes + 1))) {
+                    if (note.content) {
+                        const __ret = isImportantMemo(note.content);
+                        const isImportant = __ret.isImportant;
+                        const content = __ret.content;
+
+                        ctx.fillStyle = isImportant ? sundayColor : noteTextColor; // [수정] !로 시작하면 빨간색
+                        const displayText = fitText(ctx, content, cellWidth - 10);
+                        ctx.fillText(displayText, x + 5, noteStartY + (idx * 15));
+                    }
+                } else if (idx >= maxShowNotes && idx < 12) {
+                    ctx.fillStyle = noteTextColor;
+                    const dotX = x + (idx - maxShowNotes) * 15 + 5;
+                    const dotY = noteStartY + (maxShowNotes * 15);
+                    ctx.fillText(idx === 11 ? '⭕' : '🔵', dotX, dotY);
+                    if (note.content) {
+                        noteHoverTargets.push({
+                            x: dotX - 2,
+                            y: dotY - 2,
+                            w: 14,
+                            h: 14,
+                            text: note.content
+                        });
+                    }
+                }
+            });
+        }
+    }
+
+    function drawEnglishWord(english, x, noteStartY) {
+        if (english.length > 0) {
+            ctx.fillStyle = noteTextColor;
+            english.forEach((note, idx) => {
+                if (idx < 9) {
+                    ctx.fillStyle = noteTextColor;
+                    const dotX = x + idx * 15 + 5;
+                    const dotY = noteStartY;
+                    ctx.fillText(idx === 8 ? '🔚' : '🔠', dotX, dotY);
+                    if (note.content) {
+                        noteHoverTargets.push({
+                            x: dotX - 2,
+                            y: dotY - 2,
+                            w: 14,
+                            h: 14,
+                            text: note.content
+                        });
+                    }
+                }
+            });
+        }
+    }
+
     for (let i = 0; i < 42; i++) {
         if (i < firstDayIndex) continue;
         if (currentDrawDate > lastDate) break;
@@ -421,58 +476,9 @@ function drawCanvas() {
             const maxShowNotes = 3;
             ctx.font = '14px sans-serif';
             ctx.fillStyle = noteTextColor; // [수정] 메모 색상 변수 사용
-
-            if (notes.length > 0 ) {
-                notes.forEach((note, idx) => {
-                    if (idx < maxShowNotes || (idx === maxShowNotes && notes.length === (maxShowNotes + 1))) {
-                        if (note.content) {
-                            const __ret = isImportantMemo( note.content);
-                            const isImportant = __ret.isImportant;
-                            const content = __ret.content;
-
-                            ctx.fillStyle = isImportant ? sundayColor : noteTextColor; // [수정] !로 시작하면 빨간색
-                            const displayText = fitText(ctx, content, cellWidth - 10);
-                            ctx.fillText(displayText, x + 5, noteStartY + (idx * 15));
-                        }
-                    } else if (idx >= maxShowNotes && idx < 12) {
-                        ctx.fillStyle = noteTextColor;
-                        const dotX = x + (idx - maxShowNotes) * 15 + 5;
-                        const dotY = noteStartY + (maxShowNotes * 15);
-                        ctx.fillText(idx === 11 ? '⭕' : '🔵', dotX, dotY);
-                        if (note.content) {
-                            noteHoverTargets.push({
-                                x: dotX - 2,
-                                y: dotY - 2,
-                                w: 14,
-                                h: 14,
-                                text: note.content
-                            });
-                        }
-                    }
-                });
-            }
-
-            if (english.length > 0 ) {
-                noteStartY += 15 * maxShowNotes + 15;
-                ctx.fillStyle = noteTextColor;
-                english.forEach((note, idx) => {
-                    if (idx < 9) {
-                        ctx.fillStyle = noteTextColor;
-                        const dotX = x + idx * 15 + 5;
-                        const dotY = noteStartY;
-                        ctx.fillText(idx === 8 ? '🔚' : '🔠', dotX, dotY);
-                        if (note.content) {
-                            noteHoverTargets.push({
-                                x: dotX - 2,
-                                y: dotY - 2,
-                                w: 14,
-                                h: 14,
-                                text: note.content
-                            });
-                        }
-                    }
-                });
-            }
+            drawNote(notes, maxShowNotes, x, noteStartY);
+            noteStartY += 15 * maxShowNotes + 15;
+            drawEnglishWord(english, x, noteStartY);
         }
 
         // -- 날짜 칸 테두리 --
