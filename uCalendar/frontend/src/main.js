@@ -414,14 +414,17 @@ function drawCanvas() {
 
         // -- 메모 텍스트 --
         if (Array.isArray(notesData)) {
-            const matches = notesData.filter(n => n.date === dateStr);
+            const notes = notesData.filter(n => n.date === dateStr && !n.content.startsWith('#'))
+                .sort((a, b) => b.content.localeCompare(a.content));
+            const english = notesData.filter(n => n.date === dateStr && n.content.startsWith('#'))
+                .sort((a, b) => b.content.localeCompare(a.content));
+            const maxShowNotes = 3;
+            ctx.font = '14px sans-serif';
+            ctx.fillStyle = noteTextColor; // [수정] 메모 색상 변수 사용
 
-            if (matches.length > 0) {
-                ctx.font = '14px sans-serif';
-                ctx.fillStyle = noteTextColor; // [수정] 메모 색상 변수 사용
-
-                matches.forEach((note, idx) => {
-                    if (idx < 4) {
+            if (notes.length > 0 ) {
+                notes.forEach((note, idx) => {
+                    if (idx < maxShowNotes || (idx === maxShowNotes && notes.length === (maxShowNotes + 1))) {
                         if (note.content) {
                             const __ret = isImportantMemo( note.content);
                             const isImportant = __ret.isImportant;
@@ -431,11 +434,33 @@ function drawCanvas() {
                             const displayText = fitText(ctx, content, cellWidth - 10);
                             ctx.fillText(displayText, x + 5, noteStartY + (idx * 15));
                         }
-                    } else if (idx >= 4 && idx < 12) {
+                    } else if (idx >= maxShowNotes && idx < 12) {
                         ctx.fillStyle = noteTextColor;
-                        const dotX = x + (idx - 4) * 15;
-                        const dotY = noteStartY + (4 * 15);
+                        const dotX = x + (idx - maxShowNotes) * 15 + 5;
+                        const dotY = noteStartY + (maxShowNotes * 15);
                         ctx.fillText(idx === 11 ? '⭕' : '🔵', dotX, dotY);
+                        if (note.content) {
+                            noteHoverTargets.push({
+                                x: dotX - 2,
+                                y: dotY - 2,
+                                w: 14,
+                                h: 14,
+                                text: note.content
+                            });
+                        }
+                    }
+                });
+            }
+
+            if (english.length > 0 ) {
+                noteStartY += 15 * maxShowNotes + 15;
+                ctx.fillStyle = noteTextColor;
+                english.forEach((note, idx) => {
+                    if (idx < 9) {
+                        ctx.fillStyle = noteTextColor;
+                        const dotX = x + idx * 15 + 5;
+                        const dotY = noteStartY;
+                        ctx.fillText(idx === 8 ? '🔚' : '🔠', dotX, dotY);
                         if (note.content) {
                             noteHoverTargets.push({
                                 x: dotX - 2,
@@ -806,7 +831,7 @@ async function openModal(day) {
     document.getElementById('modalDateTitle').innerText = selectedDateStr;
 
     // 해당 날짜의 메모 필터링
-    const notes = notesData.filter(n => n.date === selectedDateStr);
+    const notes = notesData.filter(n => n.date === selectedDateStr).sort((a, b) => b.content.localeCompare(a.content));;
 
     const listEl = document.getElementById('modalNoteList');
     listEl.innerHTML = '';
