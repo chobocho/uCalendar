@@ -419,7 +419,7 @@ function drawCanvas() {
                     const dotX = x + idx * 15 + 5;
                     const dotY = noteStartY;
                     const isCode = note.content.startsWith('@');
-                    ctx.fillText(idx === 8 ? '🔚' : (isCode ? '💾' : '🔡'), dotX, dotY);
+                    ctx.fillText(idx === 8 ? '🔚' : (isCode ? '💾' : '🅰️'), dotX, dotY);
                     if (note.content) {
                         noteHoverTargets.push({
                             x: dotX - 2,
