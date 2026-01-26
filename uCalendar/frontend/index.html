@@ -10,14 +10,14 @@
     <div class="nav-bar">
         <div class="nav-controls">
             <button onclick="changeMonth(-1)">◀</button>
-            <span id="current-date-display">2023-10</span>
+            <span id="current-date-display">2026-01</span>
             <button onclick="changeMonth(1)">▶</button>
-            <button onclick="backToThisMonth()" title="이번 달로 이동" aria-label="이번 달로 이동">🏠</button>
-            <button onclick="showYearCalendar()" title="연간 달력" aria-label="연간 달력 표시">📆</button>
-            <button onclick="showSearchPanel()" title="일정 검색 (Ctrl + F)" aria-label="일정 검색 표시">🔍</button>
+            <button class ="nav-home-btn" onclick="backToThisMonth()" title="이번 달로 이동" aria-label="이번 달로 이동">🏠</button>
+            <button class ="nav-home-btn" onclick="showYearCalendar()" title="연간 달력" aria-label="연간 달력 표시">📆</button>
+            <button class ="nav-home-btn" onclick="showSearchPanel()" title="일정 검색 (Ctrl + F)" aria-label="일정 검색 표시">🔍</button>
         </div>
         <div>
-            <button onclick="toggleTheme()" title="테마 변경" style="margin-left: 10px;">🌙</button>
+            <button class ="nav-home-btn" onclick="toggleTheme()" title="테마 변경" style="margin-left: 10px;">🌙</button>
         </div>
     </div>
 
