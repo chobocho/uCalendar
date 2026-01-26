@@ -848,9 +848,15 @@ async function openModal(day) {
 
         const checkBtn = document.createElement('button');
         checkBtn.className = 'check-btn';
-        checkBtn.textContent = '\u2714\uFE0F';
+        checkBtn.textContent = '✔️';
         checkBtn.title = '완료 표시';
-        checkBtn.addEventListener('click', () => checkNote(note.id, note.content));
+        checkBtn.addEventListener('click', () => checkNote(note.id, '✅','\uD83D\uDEA9', note.content));
+
+        const cancelBtn = document.createElement('button');
+        cancelBtn.className = 'check-btn';
+        cancelBtn.textContent = '\uD83D\uDEA9';
+        cancelBtn.title = '취소 표시';
+        cancelBtn.addEventListener('click', () => checkNote(note.id, cancelBtn.textContent,'✅', note.content));
 
         const contentSpan = document.createElement('span');
         contentSpan.className = 'note-content';
@@ -868,7 +874,7 @@ async function openModal(day) {
         deleteBtn.title = '노트 삭제';
         deleteBtn.addEventListener('click', () => deleteNote(note.id, note.content));
 
-        li.append(checkBtn, contentSpan, editBtn, deleteBtn);
+        li.append(contentSpan, checkBtn, cancelBtn, editBtn, deleteBtn);
         listEl.appendChild(li);
     });
     document.getElementById('noteModal').classList.remove('hidden');
@@ -879,10 +885,16 @@ window.closeModal = () => {
     document.getElementById('noteInput').value = '';
 };
 
-window.checkNote = async (id, text) => {
-    const checkBtn = '\u2705';
-    if (text.startsWith(checkBtn)) text = text.substring(1);
-    else text = checkBtn + text;
+window.checkNote = async (id, btnType, ignoreType, text) => {
+    if (text.startsWith(btnType)) {
+        text = Array.from(text).slice(1).join('');
+    }
+    else if (text.startsWith(ignoreType)) {
+        text = Array.from(text).slice(1).join('');
+        text = btnType + text;
+    } else {
+        text = btnType + text;
+    }
     await window.go.main.App.UpdateNote(id, text);
     // selectedDateStr에서 일(day)을 추출
     const day = parseInt(selectedDateStr.split('-')[2]);
