@@ -904,11 +904,3 @@ window.saveNote = async () => {
     openModal(day); // 저장 후 모달 유지
     document.getElementById('noteInput').value = ''; // 입력창 비우기
 };
-
-// ✅ [추가] 앱 종료 함수
-window.quitApp = () => {
-    if(confirm("달력을 종료하시겠습니까?")) {
-        window.go.main.App.Quit();
-    }
-};
-
