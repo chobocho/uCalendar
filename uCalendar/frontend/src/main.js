@@ -418,7 +418,8 @@ function drawCanvas() {
                     ctx.fillStyle = noteTextColor;
                     const dotX = x + idx * 15 + 5;
                     const dotY = noteStartY;
-                    ctx.fillText(idx === 8 ? '🔚' : '🔠', dotX, dotY);
+                    const isCode = note.content.startsWith('@');
+                    ctx.fillText(idx === 8 ? '🔚' : (isCode ? '💾' : '🔡'), dotX, dotY);
                     if (note.content) {
                         noteHoverTargets.push({
                             x: dotX - 2,
@@ -469,9 +470,11 @@ function drawCanvas() {
 
         // -- 메모 텍스트 --
         if (Array.isArray(notesData)) {
-            const notes = notesData.filter(n => n.date === dateStr && !n.content.startsWith('#'))
+            const notes = notesData.filter(n => n.date === dateStr &&
+                (!n.content.startsWith('#') && !n.content.startsWith('@')))
                 .sort((a, b) => b.content.localeCompare(a.content));
-            const english = notesData.filter(n => n.date === dateStr && n.content.startsWith('#'))
+            const english = notesData.filter(n => n.date === dateStr &&
+                (n.content.startsWith('#') || n.content.startsWith('@')))
                 .sort((a, b) => b.content.localeCompare(a.content));
             const maxShowNotes = 3;
             ctx.font = '14px sans-serif';
