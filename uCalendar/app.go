@@ -149,6 +149,7 @@ func (a *App) SaveOrUpdateNoteByDate(date string, content string) string {
 	if err != nil {
 		return fmt.Sprintf("Error: %s", err)
 	}
+	log.Println("SaveOrUpdateNoteByDate: Updated")
 	return "Updated"
 }
 

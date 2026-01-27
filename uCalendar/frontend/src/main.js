@@ -121,12 +121,18 @@ window.closeNotePanel = async () => {
     }
 }
 
+window.saveNotePadWithNoti = async () => {
+    const msg = await window.saveNotePad();
+    alert(msg);
+}
+
 window.saveNotePad = async () => {
     const noteEditor = document.getElementById('note-editor');
-    if (!noteEditor) return;
+    if (!noteEditor) return "저장할 데이타가 없습니다.";
 
     const content = noteEditor.value;
-    if (!notePadDirty || content === notePadLastSavedContent) return;
+    if (!notePadDirty || content === notePadLastSavedContent) return "변경 내용이 없습니다.";
+    let retMsg = "저장에 성공했습니다.";
     try {
         await window.go.main.App.SaveOrUpdateNoteByDate('NOTEPAD', content);
         notePadLastSavedContent = content;
@@ -134,7 +140,9 @@ window.saveNotePad = async () => {
         console.log("Notepad auto-saved");
     } catch (e) {
         console.error("Failed to save NOTEPAD:", e);
+        retMsg = "저장에 실패했습니다.";
     }
+    return retMsg;
 }
 
 function updateCharCount() {
