@@ -59,6 +59,10 @@ window.showSearchPanel = () => {
     updateSearchResults();
 }
 
+window.openNotePanel = () => {
+
+}
+
 window.toggleTheme = () => {
     isDarkTheme = !isDarkTheme;
 
