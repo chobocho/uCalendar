@@ -123,13 +123,21 @@ function setupSearchUI() {
 
     document.addEventListener('keydown', (e) => {
         const isFindShortcut = (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'f';
+        const isNotePadShortcut = (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'n';
         if (isFindShortcut) {
             e.preventDefault();
             showSearchPanel();
             return;
         }
+        if (isNotePadShortcut) {
+            e.preventDefault();
+            openNotePanel();
+            return;
+        }
         if (e.key === 'Escape') {
             hideSearchPanel();
+            closeModal();
+            return;
         }
     });
 
