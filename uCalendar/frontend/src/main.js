@@ -322,7 +322,6 @@ async function renderCalendar() {
     document.getElementById('current-date-display').innerText = ym;
 
     try {
-        // 데이터 가져오기 시도
         const result = await window.go.main.App.GetNotesByMonth(ym);
         notesData = result || [];
     } catch(e) {
@@ -331,7 +330,6 @@ async function renderCalendar() {
         notesData = [];
     }
 
-    // 그리기
     drawCanvas();
 }
 
@@ -741,7 +739,7 @@ function drawCanvas() {
                         ctx.fillStyle = isImportant ? sundayColor : noteTextColor; // [수정] !로 시작하면 빨간색
                         const displayText = fitText(ctx, content, cellWidth - 10);
                         ctx.fillText(displayText, x + 5, noteStartY + (idx * 15));
-                        if (note.content.length > 9) {
+                        if (note.content.length > 14) {
                             const dotX = x + 5;
                             const dotY = noteStartY + (idx * 15);
                             noteHoverTargets.push({
