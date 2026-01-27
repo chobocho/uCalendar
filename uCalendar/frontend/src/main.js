@@ -142,6 +142,27 @@ window.openNotePanel = async () => {
             insertDivider();
             return;
         }
+
+        // Ctrl+Shift+A: 현재 위치에 → 추가
+        if (e.ctrlKey && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
+            e.preventDefault();
+            insertSymbol('→');
+            return;
+        }
+
+        // Ctrl+Shift+B: 현재 위치에 ■ 추가
+        if (e.ctrlKey && e.shiftKey && (e.key === 'Q' || e.key === 'q')) {
+            e.preventDefault();
+            insertSymbol('■');
+            return;
+        }
+
+        // Ctrl+Shift+W: 현재 위치에 □ 추가
+        if (e.ctrlKey && e.shiftKey && (e.key === 'W' || e.key === 'w')) {
+            e.preventDefault();
+            insertSymbol('□');
+            return;
+        }
     };
 
     // 3분마다 자동 저장 시작 (180,000ms)
@@ -207,6 +228,29 @@ function insertDivider() {
 
     // 커서를 구분선 다음으로 이동
     const newCursorPos = cursorPos + prefix.length + divider.length + suffix.length;
+    noteEditor.setSelectionRange(newCursorPos, newCursorPos);
+
+    // 라인 넘버와 글자수 업데이트
+    updateLineNumbers();
+    updateCharCount();
+
+    // dirty 상태 업데이트
+    notePadDirty = noteEditor.value !== notePadLastSavedContent;
+}
+
+function insertSymbol(symbol) {
+    const noteEditor = document.getElementById('note-editor');
+    if (!noteEditor) return;
+
+    const cursorPos = noteEditor.selectionStart;
+    const textBefore = noteEditor.value.substring(0, cursorPos);
+    const textAfter = noteEditor.value.substring(noteEditor.selectionEnd);
+
+    const newText = textBefore + symbol + textAfter;
+    noteEditor.value = newText;
+
+    // 커서를 심볼 다음으로 이동
+    const newCursorPos = cursorPos + symbol.length;
     noteEditor.setSelectionRange(newCursorPos, newCursorPos);
 
     // 라인 넘버와 글자수 업데이트
