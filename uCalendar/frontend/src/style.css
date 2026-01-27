@@ -211,6 +211,86 @@ textarea { width: 100%; height: 80px; margin-top: 10px; }
     color: var(--search-muted);
     padding: 4px 2px;
 }
+
+/* 메모장 패널 스타일 */
+.note-panel {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 800px;
+    height: 600px;
+    background: var(--modal-bg);
+    border: 1px solid var(--search-border);
+    border-radius: 8px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    z-index: 150;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.note-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    background: rgba(0, 0, 0, 0.05);
+    border-bottom: 1px solid var(--search-border);
+    color: var(--modal-text);
+    font-weight: bold;
+}
+
+.note-close-btn {
+    background: none;
+    border: none;
+    color: var(--modal-text);
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.note-editor-container {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+    position: relative;
+}
+
+.line-numbers {
+    width: 40px;
+    padding: 10px 5px;
+    text-align: right;
+    background: rgba(0, 0, 0, 0.03);
+    border-right: 1px solid var(--search-border);
+    color: #888;
+    font-family: monospace;
+    font-size: 14px;
+    line-height: 1.5;
+    user-select: none;
+    overflow: hidden;
+    white-space: pre;
+}
+
+.note-editor {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 10px;
+    resize: none;
+    font-family: monospace;
+    font-size: 14px;
+    line-height: 1.5;
+    background: transparent;
+    color: var(--modal-text);
+    overflow-y: auto;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;  /* IE/Edge */
+}
+
+.note-editor::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+}
+
 .note-item {
     display: flex; justify-content: space-between;
     border-bottom: 1px solid #eee; padding: 5px 0;

@@ -60,7 +60,46 @@ window.showSearchPanel = () => {
 }
 
 window.openNotePanel = () => {
+    const notePanel = document.getElementById('note-panel');
+    const noteEditor = document.getElementById('note-editor');
+    const lineNumbers = document.getElementById('line-numbers');
 
+    if (!notePanel || !noteEditor || !lineNumbers) return;
+
+    notePanel.classList.remove('hidden');
+    noteEditor.focus();
+
+    // 초기 라인 넘버 설정 및 이벤트 리스너 등록
+    updateLineNumbers();
+
+    noteEditor.oninput = () => {
+        updateLineNumbers();
+    };
+
+    noteEditor.onscroll = () => {
+        lineNumbers.scrollTop = noteEditor.scrollTop;
+    };
+}
+
+window.closeNotePanel = () => {
+    const notePanel = document.getElementById('note-panel');
+    if (notePanel) {
+        notePanel.classList.add('hidden');
+    }
+}
+
+function updateLineNumbers() {
+    const noteEditor = document.getElementById('note-editor');
+    const lineNumbers = document.getElementById('line-numbers');
+    if (!noteEditor || !lineNumbers) return;
+
+    const lines = noteEditor.value.split('\n');
+    const lineCount = lines.length;
+    let lineNumbersHTML = '';
+    for (let i = 1; i <= lineCount; i++) {
+        lineNumbersHTML += i + '\n';
+    }
+    lineNumbers.textContent = lineNumbersHTML;
 }
 
 window.toggleTheme = () => {
@@ -137,6 +176,7 @@ function setupSearchUI() {
         if (e.key === 'Escape') {
             hideSearchPanel();
             closeModal();
+            closeNotePanel();
             return;
         }
     });

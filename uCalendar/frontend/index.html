@@ -31,6 +31,17 @@
         <div id="searchEmpty" class="search-empty">검색어를 넣어 주세요</div>
     </div>
 
+    <div id="note-panel" class="note-panel hidden">
+        <div class="note-panel-header">
+            <span>무한 메모장</span>
+            <button onclick="closeNotePanel()" class="note-close-btn">X</button>
+        </div>
+        <div class="note-editor-container">
+            <div id="line-numbers" class="line-numbers">1</div>
+            <textarea id="note-editor" class="note-editor" spellcheck="false"></textarea>
+        </div>
+    </div>
+
     <canvas id="calendarCanvas"></canvas>
 
     <div id="noteModal" class="modal hidden">
