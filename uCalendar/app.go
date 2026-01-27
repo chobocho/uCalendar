@@ -60,6 +60,13 @@ func (a *App) startup(ctx context.Context) {
 			Message: "테이블 생성 실패: " + err.Error(),
 		})
 	}
+
+	// [추가] NOTEPAD 필드 확인 및 생성
+	var count int
+	err = a.db.QueryRow("SELECT COUNT(*) FROM notes WHERE date = 'NOTEPAD'").Scan(&count)
+	if err == nil && count == 0 {
+		_, _ = a.db.Exec("INSERT INTO notes(date, content) VALUES('NOTEPAD', '')")
+	}
 }
 
 // shutdown: 앱 종료 시 DB 닫기 (main.go에서 호출 필요)
@@ -113,6 +120,36 @@ func (a *App) GetAllNotes() []Note {
 		notes = append(notes, n)
 	}
 	return notes
+}
+
+// GetNoteByDate: 특정 날짜의 메모를 가져옵니다.
+func (a *App) GetNoteByDate(date string) Note {
+	var n Note
+	err := a.db.QueryRow("SELECT id, date, content FROM notes WHERE date = ?", date).Scan(&n.ID, &n.Date, &n.Content)
+	if err != nil {
+		return Note{}
+	}
+	return n
+}
+
+// SaveOrUpdateNoteByDate: 날짜를 기준으로 메모를 저장하거나 업데이트합니다.
+func (a *App) SaveOrUpdateNoteByDate(date string, content string) string {
+	var id int
+	err := a.db.QueryRow("SELECT id FROM notes WHERE date = ?", date).Scan(&id)
+	if err != nil {
+		// 존재하지 않으면 삽입
+		_, err = a.db.Exec("INSERT INTO notes(date, content) VALUES(?, ?)", date, content)
+		if err != nil {
+			return fmt.Sprintf("Error: %s", err)
+		}
+		return "Saved"
+	}
+	// 존재하면 업데이트
+	_, err = a.db.Exec("UPDATE notes SET content = ? WHERE id = ?", content, id)
+	if err != nil {
+		return fmt.Sprintf("Error: %s", err)
+	}
+	return "Updated"
 }
 
 // SaveNote: 메모 저장

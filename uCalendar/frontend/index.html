@@ -40,6 +40,13 @@
             <div id="line-numbers" class="line-numbers">1</div>
             <textarea id="note-editor" class="note-editor" spellcheck="false"></textarea>
         </div>
+        <div class="note-panel-footer">
+            <span id="note-char-count">글자수: 0</span>
+            <div class="note-footer-btns">
+                <button onclick="saveNotePad()" class="note-save-btn">지금 저장</button>
+                <button onclick="closeNotePanel()" class="note-close-footer-btn">닫기</button>
+            </div>
+        </div>
     </div>
 
     <canvas id="calendarCanvas"></canvas>

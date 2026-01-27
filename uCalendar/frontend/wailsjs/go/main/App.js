@@ -10,6 +10,10 @@ export function GetAllNotes() {
   return window['go']['main']['App']['GetAllNotes']();
 }
 
+export function GetNoteByDate(arg1) {
+  return window['go']['main']['App']['GetNoteByDate'](arg1);
+}
+
 export function GetNotesByMonth(arg1) {
   return window['go']['main']['App']['GetNotesByMonth'](arg1);
 }
@@ -20,6 +24,10 @@ export function Quit() {
 
 export function SaveNote(arg1, arg2) {
   return window['go']['main']['App']['SaveNote'](arg1, arg2);
+}
+
+export function SaveOrUpdateNoteByDate(arg1, arg2) {
+  return window['go']['main']['App']['SaveOrUpdateNoteByDate'](arg1, arg2);
 }
 
 export function UpdateNote(arg1, arg2) {

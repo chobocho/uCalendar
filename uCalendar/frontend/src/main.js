@@ -59,33 +59,77 @@ window.showSearchPanel = () => {
     updateSearchResults();
 }
 
-window.openNotePanel = () => {
+let autoSaveTimer = null;
+
+window.openNotePanel = async () => {
     const notePanel = document.getElementById('note-panel');
     const noteEditor = document.getElementById('note-editor');
     const lineNumbers = document.getElementById('line-numbers');
 
     if (!notePanel || !noteEditor || !lineNumbers) return;
 
+    // 데이터 로드
+    try {
+        const note = await window.go.main.App.GetNoteByDate('NOTEPAD');
+        noteEditor.value = note.content || '';
+    } catch (e) {
+        console.error("Failed to load NOTEPAD:", e);
+    }
+
     notePanel.classList.remove('hidden');
     noteEditor.focus();
 
-    // 초기 라인 넘버 설정 및 이벤트 리스너 등록
+    // 초기 라인 넘버 및 글자수 설정
     updateLineNumbers();
+    updateCharCount();
 
     noteEditor.oninput = () => {
         updateLineNumbers();
+        updateCharCount();
     };
 
     noteEditor.onscroll = () => {
         lineNumbers.scrollTop = noteEditor.scrollTop;
     };
+
+    // 3분마다 자동 저장 시작 (180,000ms)
+    if (autoSaveTimer) clearInterval(autoSaveTimer);
+    autoSaveTimer = setInterval(() => {
+        saveNotePad();
+    }, 180000);
 }
 
-window.closeNotePanel = () => {
+window.closeNotePanel = async () => {
     const notePanel = document.getElementById('note-panel');
-    if (notePanel) {
+    if (notePanel && !notePanel.classList.contains('hidden')) {
+        // 닫을 때 저장
+        await saveNotePad();
         notePanel.classList.add('hidden');
+        if (autoSaveTimer) {
+            clearInterval(autoSaveTimer);
+            autoSaveTimer = null;
+        }
     }
+}
+
+window.saveNotePad = async () => {
+    const noteEditor = document.getElementById('note-editor');
+    if (!noteEditor) return;
+
+    const content = noteEditor.value;
+    try {
+        await window.go.main.App.SaveOrUpdateNoteByDate('NOTEPAD', content);
+        console.log("Notepad auto-saved");
+    } catch (e) {
+        console.error("Failed to save NOTEPAD:", e);
+    }
+}
+
+function updateCharCount() {
+    const noteEditor = document.getElementById('note-editor');
+    const charCountEl = document.getElementById('note-char-count');
+    if (!noteEditor || !charCountEl) return;
+    charCountEl.textContent = `글자수: ${noteEditor.value.length}`;
 }
 
 function updateLineNumbers() {
@@ -163,6 +207,8 @@ function setupSearchUI() {
     document.addEventListener('keydown', (e) => {
         const isFindShortcut = (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'f';
         const isNotePadShortcut = (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'n';
+        const isSaveShortcut = (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's';
+
         if (isFindShortcut) {
             e.preventDefault();
             showSearchPanel();
@@ -172,6 +218,14 @@ function setupSearchUI() {
             e.preventDefault();
             openNotePanel();
             return;
+        }
+        if (isSaveShortcut) {
+            const notePanel = document.getElementById('note-panel');
+            if (notePanel && !notePanel.classList.contains('hidden')) {
+                e.preventDefault();
+                saveNotePad();
+                return;
+            }
         }
         if (e.key === 'Escape') {
             hideSearchPanel();

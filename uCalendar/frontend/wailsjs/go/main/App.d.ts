@@ -6,10 +6,14 @@ export function DeleteNote(arg1:number):Promise<string>;
 
 export function GetAllNotes():Promise<Array<main.Note>>;
 
+export function GetNoteByDate(arg1:string):Promise<main.Note>;
+
 export function GetNotesByMonth(arg1:string):Promise<Array<main.Note>>;
 
 export function Quit():Promise<void>;
 
 export function SaveNote(arg1:string,arg2:string):Promise<string>;
+
+export function SaveOrUpdateNoteByDate(arg1:string,arg2:string):Promise<string>;
 
 export function UpdateNote(arg1:number,arg2:string):Promise<string>;
