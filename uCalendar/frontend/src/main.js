@@ -103,6 +103,40 @@ window.openNotePanel = async () => {
         lineNumbers.scrollTop = noteEditor.scrollTop;
     };
 
+    // 메모창 단축키 처리
+    noteEditor.onkeydown = (e) => {
+        // Ctrl+6 또는 Ctrl+H: 1번 라인으로 이동
+        if (e.ctrlKey && (e.key === '6' || e.key === 'h' || e.key === 'H')) {
+            e.preventDefault();
+            noteEditor.setSelectionRange(0, 0);
+            noteEditor.scrollTop = 0;
+            return;
+        }
+
+        // Ctrl+4 또는 Ctrl+E: 끝으로 이동
+        if (e.ctrlKey && (e.key === '4' || e.key === 'e' || e.key === 'E')) {
+            e.preventDefault();
+            const endPos = noteEditor.value.length;
+            noteEditor.setSelectionRange(endPos, endPos);
+            noteEditor.scrollTop = noteEditor.scrollHeight;
+            return;
+        }
+
+        // Ctrl+, 또는 Ctrl+B: 이전 검색 위치로 이동
+        if (e.ctrlKey && (e.key === ',' || e.key === 'b' || e.key === 'B')) {
+            e.preventDefault();
+            findNotePrev();
+            return;
+        }
+
+        // Ctrl+N, Ctrl+. : 다음 검색 위치로 이동
+        if (e.ctrlKey && (e.key === 'n' || e.key === 'N' || e.key === '.')) {
+            e.preventDefault();
+            findNoteInEditor({ startFromBeginning: false });
+            return;
+        }
+    };
+
     // 3분마다 자동 저장 시작 (180,000ms)
     if (autoSaveTimer) clearInterval(autoSaveTimer);
     autoSaveTimer = setInterval(() => {
@@ -249,6 +283,11 @@ function setupSearchUI() {
             return;
         }
         if (isNotePadShortcut) {
+            // 메모장이 열려있으면 단축키 무시 (메모창 내부 단축키로 처리)
+            const notePanel = document.getElementById('note-panel');
+            if (notePanel && !notePanel.classList.contains('hidden')) {
+                return;
+            }
             e.preventDefault();
             openNotePanel();
             return;
@@ -324,6 +363,36 @@ function findNoteInEditor({ startFromBeginning }) {
 
     if (matchIndex === -1 && startIndex > 0) {
         matchIndex = content.indexOf(query, 0);
+    }
+
+    if (matchIndex === -1) {
+        noteSearchInputEl.classList.add('note-search-miss');
+        setTimeout(() => noteSearchInputEl.classList.remove('note-search-miss'), 450);
+        return;
+    }
+
+    noteSearchInputEl.classList.remove('note-search-miss');
+    noteEditor.focus();
+    noteEditor.setSelectionRange(matchIndex, matchIndex + query.length);
+    scrollNoteEditorToIndex(noteEditor, matchIndex);
+}
+
+function findNotePrev() {
+    const noteEditor = document.getElementById('note-editor');
+    if (!noteEditor || !noteSearchInputEl) return;
+
+    const query = noteSearchInputEl.value;
+    if (!query) return;
+
+    const content = noteEditor.value;
+    const startIndex = noteEditor.selectionStart - 1;
+
+    if (startIndex < 0) return;
+
+    let matchIndex = content.lastIndexOf(query, startIndex);
+
+    if (matchIndex === -1) {
+        matchIndex = content.lastIndexOf(query, content.length);
     }
 
     if (matchIndex === -1) {
