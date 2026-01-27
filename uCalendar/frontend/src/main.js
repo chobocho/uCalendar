@@ -16,6 +16,8 @@ let searchEmptyEl = null;
 let noteSearchInputEl = null;
 let noteSearchBtnEl = null;
 let noteSearchNextBtnEl = null;
+let notePadLastSavedContent = '';
+let notePadDirty = false;
 
 // [추가] 다크 테마 상태 변수
 let isDarkTheme = false;
@@ -78,6 +80,8 @@ window.openNotePanel = async () => {
     } catch (e) {
         console.error("Failed to load NOTEPAD:", e);
     }
+    notePadLastSavedContent = noteEditor.value;
+    notePadDirty = false;
 
     notePanel.classList.remove('hidden');
     noteEditor.focus();
@@ -90,6 +94,7 @@ window.openNotePanel = async () => {
         updateLineNumbers();
         updateCharCount();
         lineNumbers.scrollTop = noteEditor.scrollTop;
+        notePadDirty = noteEditor.value !== notePadLastSavedContent;
     };
 
     noteEditor.onscroll = () => {
@@ -121,8 +126,11 @@ window.saveNotePad = async () => {
     if (!noteEditor) return;
 
     const content = noteEditor.value;
+    if (!notePadDirty || content === notePadLastSavedContent) return;
     try {
         await window.go.main.App.SaveOrUpdateNoteByDate('NOTEPAD', content);
+        notePadLastSavedContent = content;
+        notePadDirty = false;
         console.log("Notepad auto-saved");
     } catch (e) {
         console.error("Failed to save NOTEPAD:", e);
