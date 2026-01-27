@@ -347,6 +347,7 @@ function updateSearchResults() {
     }
 
     const results = allNotesData
+        .filter((note) => (note.date !== 'NOTEPAD'))
         .filter((note) => (note.content || '').toLowerCase().includes(query))
         .sort((a, b) => (a.date || '').localeCompare(b.date || '') || a.id - b.id);
 
