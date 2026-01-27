@@ -18,6 +18,7 @@ let noteSearchBtnEl = null;
 let noteSearchNextBtnEl = null;
 let notePadLastSavedContent = '';
 let notePadDirty = false;
+let autoSaveTimer = null;
 
 // [추가] 다크 테마 상태 변수
 let isDarkTheme = false;
@@ -64,14 +65,15 @@ window.showSearchPanel = () => {
     updateSearchResults();
 }
 
-let autoSaveTimer = null;
-
 window.openNotePanel = async () => {
     const notePanel = document.getElementById('note-panel');
     const noteEditor = document.getElementById('note-editor');
     const lineNumbers = document.getElementById('line-numbers');
 
     if (!notePanel || !noteEditor || !lineNumbers) return;
+
+    // 메모장 실행시 검색창 닫기
+    hideSearchPanel();
 
     // 데이터 로드
     try {
@@ -234,7 +236,16 @@ function setupSearchUI() {
 
         if (isFindShortcut) {
             e.preventDefault();
-            showSearchPanel();
+            // 메모장이 열려있으면 메모장 검색창에 포커스
+            const notePanel = document.getElementById('note-panel');
+            if (notePanel && !notePanel.classList.contains('hidden')) {
+                if (noteSearchInputEl) {
+                    noteSearchInputEl.focus();
+                    noteSearchInputEl.select();
+                }
+            } else {
+                showSearchPanel();
+            }
             return;
         }
         if (isNotePadShortcut) {
