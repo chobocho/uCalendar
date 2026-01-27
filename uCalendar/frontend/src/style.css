@@ -114,7 +114,7 @@ body.dark-theme textarea {
     border: 1px solid #555;
 }
 
-textarea { width: 100%; height: 80px; margin-top: 10px; }
+#noteInput { width: 100%; height: 80px; margin-top: 10px; }
 #modalNoteList {
     width: 100%;
     margin: 0;
@@ -239,6 +239,55 @@ textarea { width: 100%; height: 80px; margin-top: 10px; }
     border-bottom: 1px solid var(--search-border);
     color: var(--modal-text);
     font-weight: bold;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.note-panel-title {
+    flex: 0 0 auto;
+}
+
+.note-search-controls {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex: 1 1 auto;
+    justify-content: center;
+}
+
+.note-search-controls input {
+    width: 220px;
+    max-width: 100%;
+    height: 26px;
+    padding: 0 8px;
+    border-radius: 6px;
+    border: 1px solid var(--search-border);
+    background: transparent;
+    color: var(--modal-text);
+    outline: none;
+    font-weight: normal;
+}
+
+.note-search-controls button {
+    height: 26px;
+    padding: 0 10px;
+    border-radius: 6px;
+    border: 1px solid var(--search-border);
+    background: var(--modal-bg);
+    color: var(--modal-text);
+    font-size: 12px;
+}
+
+.note-search-controls button:hover {
+    background: rgba(0, 0, 0, 0.08);
+}
+
+body.dark-theme .note-search-controls button:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.note-search-controls input.note-search-miss {
+    border-color: #d32f2f;
 }
 
 .note-close-btn {
@@ -258,18 +307,23 @@ textarea { width: 100%; height: 80px; margin-top: 10px; }
 
 .line-numbers {
     width: 40px;
-    padding: 10px 5px;
+    padding: 10px 0; /* 좌우 패딩 제거, 상하만 유지 */
     text-align: right;
     background: rgba(0, 0, 0, 0.03);
     border-right: 1px solid var(--search-border);
     color: #888;
     font-family: monospace;
     font-size: 14px;
-    line-height: 24px; /* 1.5 * 16px (기본) -> 고정값으로 싱크 맞춤 */
+    line-height: 24px;
     user-select: none;
     overflow: hidden;
-    white-space: pre;
     box-sizing: border-box;
+}
+
+.line-numbers div {
+    padding-right: 8px; /* 숫자와 경계선 사이 간격 */
+    height: 24px;
+    line-height: 24px;
 }
 
 .note-editor {
@@ -277,6 +331,7 @@ textarea { width: 100%; height: 80px; margin-top: 10px; }
     border: none;
     outline: none;
     padding: 10px;
+    margin: 0;
     resize: none;
     font-family: monospace;
     font-size: 14px;
@@ -285,6 +340,9 @@ textarea { width: 100%; height: 80px; margin-top: 10px; }
     color: var(--modal-text);
     overflow-y: auto;
     box-sizing: border-box;
+    white-space: pre;
+    overflow-x: auto;
+    height: 100%;
 }
 
 /* 22줄이 넘어가면 스크롤바 표시 (기존에는 항상 숨김이었으나 변경) */

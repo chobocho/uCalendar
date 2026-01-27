@@ -33,7 +33,12 @@
 
     <div id="note-panel" class="note-panel hidden">
         <div class="note-panel-header">
-            <span>무한 메모장</span>
+            <span class="note-panel-title">무한 메모장</span>
+            <div class="note-search-controls">
+                <input id="noteSearchInput" type="text" placeholder="메모장 검색">
+                <button id="noteSearchBtn" type="button">검색</button>
+                <button id="noteSearchNextBtn" type="button">다음</button>
+            </div>
             <button onclick="closeNotePanel()" class="note-close-btn">X</button>
         </div>
         <div class="note-editor-container">

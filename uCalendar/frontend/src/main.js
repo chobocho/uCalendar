@@ -13,6 +13,9 @@ let searchPanelEl = null;
 let searchInputEl = null;
 let searchResultsEl = null;
 let searchEmptyEl = null;
+let noteSearchInputEl = null;
+let noteSearchBtnEl = null;
+let noteSearchNextBtnEl = null;
 
 // [추가] 다크 테마 상태 변수
 let isDarkTheme = false;
@@ -86,6 +89,7 @@ window.openNotePanel = async () => {
     noteEditor.oninput = () => {
         updateLineNumbers();
         updateCharCount();
+        lineNumbers.scrollTop = noteEditor.scrollTop;
     };
 
     noteEditor.onscroll = () => {
@@ -141,9 +145,11 @@ function updateLineNumbers() {
     const lineCount = lines.length;
     let lineNumbersHTML = '';
     for (let i = 1; i <= lineCount; i++) {
-        lineNumbersHTML += i + '\n';
+        lineNumbersHTML += `<div>${i}</div>`;
     }
-    lineNumbers.textContent = lineNumbersHTML;
+    const scrollTop = noteEditor.scrollTop;
+    lineNumbers.innerHTML = lineNumbersHTML;
+    lineNumbers.scrollTop = scrollTop;
 }
 
 window.toggleTheme = () => {
@@ -172,6 +178,7 @@ function resizeCanvas() {
 function initApp() {
     resizeCanvas();
     setupSearchUI();
+    setupNoteSearchUI();
     refreshAllNotes();
     // 초기 실행
     renderCalendar();
@@ -252,6 +259,67 @@ function setupSearchUI() {
     if (closeBtn) {
         closeBtn.addEventListener('click', hideSearchPanel);
     }
+}
+
+function setupNoteSearchUI() {
+    noteSearchInputEl = document.getElementById('noteSearchInput');
+    noteSearchBtnEl = document.getElementById('noteSearchBtn');
+    noteSearchNextBtnEl = document.getElementById('noteSearchNextBtn');
+
+    if (!noteSearchInputEl || !noteSearchBtnEl || !noteSearchNextBtnEl) return;
+
+    noteSearchBtnEl.addEventListener('click', () => {
+        findNoteInEditor({ startFromBeginning: true });
+    });
+
+    noteSearchNextBtnEl.addEventListener('click', () => {
+        findNoteInEditor({ startFromBeginning: false });
+    });
+
+    noteSearchInputEl.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            findNoteInEditor({ startFromBeginning: false });
+        }
+    });
+}
+
+function findNoteInEditor({ startFromBeginning }) {
+    const noteEditor = document.getElementById('note-editor');
+    if (!noteEditor || !noteSearchInputEl) return;
+
+    const query = noteSearchInputEl.value;
+    if (!query) return;
+
+    const content = noteEditor.value;
+    const startIndex = startFromBeginning ? 0 : noteEditor.selectionEnd;
+    let matchIndex = content.indexOf(query, startIndex);
+
+    if (matchIndex === -1 && startIndex > 0) {
+        matchIndex = content.indexOf(query, 0);
+    }
+
+    if (matchIndex === -1) {
+        noteSearchInputEl.classList.add('note-search-miss');
+        setTimeout(() => noteSearchInputEl.classList.remove('note-search-miss'), 450);
+        return;
+    }
+
+    noteSearchInputEl.classList.remove('note-search-miss');
+    noteEditor.focus();
+    noteEditor.setSelectionRange(matchIndex, matchIndex + query.length);
+    scrollNoteEditorToIndex(noteEditor, matchIndex);
+}
+
+function scrollNoteEditorToIndex(noteEditor, index) {
+    const textBefore = noteEditor.value.slice(0, index);
+    const lineIndex = textBefore.split('\n').length - 1;
+    const style = window.getComputedStyle(noteEditor);
+    const lineHeight = parseFloat(style.lineHeight) || 24;
+    const paddingTop = parseFloat(style.paddingTop) || 0;
+    const targetTop = (lineIndex * lineHeight) + paddingTop;
+    const offset = noteEditor.clientHeight / 3;
+    noteEditor.scrollTop = Math.max(0, targetTop - offset);
 }
 
 function hideSearchPanel() {
