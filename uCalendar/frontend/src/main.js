@@ -135,6 +135,13 @@ window.openNotePanel = async () => {
             findNoteInEditor({ startFromBeginning: false });
             return;
         }
+
+        // Ctrl+L: 구분선 추가
+        if (e.ctrlKey && (e.key === 'l' || e.key === 'L')) {
+            e.preventDefault();
+            insertDivider();
+            return;
+        }
     };
 
     // 3분마다 자동 저장 시작 (180,000ms)
@@ -179,6 +186,35 @@ window.saveNotePad = async () => {
         retMsg = "저장에 실패했습니다.";
     }
     return retMsg;
+}
+
+function insertDivider() {
+    const noteEditor = document.getElementById('note-editor');
+    if (!noteEditor) return;
+
+    const divider = '─'.repeat(50);
+    const cursorPos = noteEditor.selectionStart;
+    const textBefore = noteEditor.value.substring(0, cursorPos);
+    const textAfter = noteEditor.value.substring(noteEditor.selectionEnd);
+
+    // 커서 앞에 텍스트가 있고 줄바꿈이 아니면 줄바꿈 추가
+    const prefix = (textBefore.length > 0 && !textBefore.endsWith('\n')) ? '\n' : '';
+    // 커서 뒤에 텍스트가 있고 줄바꿈이 아니면 줄바꿈 추가
+    const suffix = (textAfter.length > 0 && !textAfter.startsWith('\n')) ? '\n' : '';
+
+    const newText = textBefore + prefix + divider + suffix + textAfter;
+    noteEditor.value = newText;
+
+    // 커서를 구분선 다음으로 이동
+    const newCursorPos = cursorPos + prefix.length + divider.length + suffix.length;
+    noteEditor.setSelectionRange(newCursorPos, newCursorPos);
+
+    // 라인 넘버와 글자수 업데이트
+    updateLineNumbers();
+    updateCharCount();
+
+    // dirty 상태 업데이트
+    notePadDirty = noteEditor.value !== notePadLastSavedContent;
 }
 
 function updateCharCount() {
