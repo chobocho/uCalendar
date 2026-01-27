@@ -390,6 +390,18 @@ function drawCanvas() {
                         ctx.fillStyle = isImportant ? sundayColor : noteTextColor; // [수정] !로 시작하면 빨간색
                         const displayText = fitText(ctx, content, cellWidth - 10);
                         ctx.fillText(displayText, x + 5, noteStartY + (idx * 15));
+                        if (note.content.length > 9) {
+                            const dotX = x + 5;
+                            const dotY = noteStartY + (idx * 15);
+                            noteHoverTargets.push({
+                                x: dotX - 2,
+                                y: dotY - 2,
+                                w: 15 * 9,
+                                h: 14,
+                                text: note.content
+                            });
+                        }
+
                     }
                 } else if (idx >= maxShowNotes && idx < 12) {
                     ctx.fillStyle = noteTextColor;
