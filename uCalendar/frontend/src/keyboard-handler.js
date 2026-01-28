@@ -94,9 +94,21 @@ export const KeyboardHandler = {
             return;
         }
 
-        if (e.ctrlKey && e.shiftKey && (e.key === 'Q' || e.key === 'q')) {
+        if (e.ctrlKey && e.shiftKey && (e.key === 'C' || e.key === 'c')) {
+            e.preventDefault();
+            Notepad.insertSymbol('√');
+            return;
+        }
+
+        if (e.ctrlKey && e.shiftKey && (e.key === 'O' || e.key === 'o')) {
             e.preventDefault();
             Notepad.insertSymbol('■');
+            return;
+        }
+
+        if (e.ctrlKey && e.shiftKey && (e.key === 'R' || e.key === 'r')) {
+            e.preventDefault();
+            Notepad.insertSymbol('※');
             return;
         }
 
