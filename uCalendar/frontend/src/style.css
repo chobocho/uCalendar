@@ -49,17 +49,6 @@ body.dark-theme textarea {
     position: relative;
 }
 
-.nav-bar {
-    height: 40px;
-    background: rgba(0, 0, 0, 0.7);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 20px;
-    color: white;
-    -webkit-app-region: drag; /* 상단바 드래그 가능 */
-}
-
 button {
     cursor: pointer;
     -webkit-app-region: no-drag;
@@ -218,8 +207,8 @@ body.dark-theme textarea {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 800px;
-    height: 600px;
+    width: 1000px;
+    height: 700px;
     background: var(--modal-bg);
     border: 1px solid var(--search-border);
     border-radius: 8px;
@@ -415,7 +404,7 @@ body.dark-theme .note-footer-btns button:hover {
     justify-content: space-between; /* 양쪽 끝 정렬 */
     padding: 0 10px;
     color: white;
-    -webkit-app-region: drag;
+    -webkit-app-region: drag; /* 상단바 드래그 가능 */
 }
 
 .nav-controls {
