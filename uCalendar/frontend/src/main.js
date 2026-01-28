@@ -712,7 +712,7 @@ function drawCanvas() {
     ctx.font = 'bold 12px sans-serif';
     ctx.textBaseline = 'middle';
 
-    for(let i=0; i<7; i++) {
+    for(let i=0; i < 7; i++) {
         const x = i * cellWidth + cellWidth/2;
         const y = headerHeight / 2;
 
@@ -726,6 +726,76 @@ function drawCanvas() {
 
     // 2. 날짜 및 메모 그리기
     let currentDrawDate = 1;
+
+    for (let i = 0; i < 42; i++) {
+        if (i < firstDayIndex) continue;
+        if (currentDrawDate > lastDate) break;
+
+        const col = i % 7;
+        const row = Math.floor(i / 7);
+
+        const x = col * cellWidth;
+        const y = headerHeight + row * cellHeight;
+        const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(currentDrawDate).padStart(2, '0')}`;
+        const holidayName = holidays[dateStr];
+
+        // -- 날짜 숫자 --
+        ctx.font = '16px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'top';
+
+        if (holidayName) ctx.fillStyle = sundayColor;
+        else if (col === 0) ctx.fillStyle = sundayColor;
+        else if (col === 6) ctx.fillStyle = saturdayColor; // [수정] 파랑색 약간 조정
+        else ctx.fillStyle = baseTextColor;            // [수정] 일반 날짜 색상 변수 사용
+
+        ctx.fillText(currentDrawDate, x + 5, y + 5);
+
+        // -- Holiday label --
+        let noteStartY = y;
+        if (holidayName) {
+            ctx.font = '12px sans-serif';
+            ctx.fillStyle = sundayColor;
+            const holidayText = fitText(ctx, holidayName, cellWidth - 10);
+            if (currentDrawDate >= 10) {
+                ctx.fillText(holidayText, x + 32, noteStartY + 7);
+            } else {
+                ctx.fillText(holidayText, x + 22, noteStartY + 7);
+            }
+        }
+        noteStartY = y + 25;
+
+        // -- 메모 텍스트 --
+        if (Array.isArray(notesData)) {
+            const notes = notesData.filter(n => n.date === dateStr &&
+                (!n.content.startsWith('#') && !n.content.startsWith('@')))
+                .sort((a, b) => b.content.localeCompare(a.content));
+            const english = notesData.filter(n => n.date === dateStr &&
+                (n.content.startsWith('#') || n.content.startsWith('@')))
+                .sort((a, b) => b.content.localeCompare(a.content));
+            const maxShowNotes = 3;
+            ctx.font = '14px sans-serif';
+            ctx.fillStyle = noteTextColor; // [수정] 메모 색상 변수 사용
+            drawNote(notes, maxShowNotes, x, noteStartY);
+            noteStartY += 15 * maxShowNotes + 15;
+            drawEnglishWord(english, x, noteStartY);
+        }
+
+        // -- 날짜 칸 테두리 --
+        ctx.strokeStyle = isDarkTheme ? '#555555' : '#dddddd';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(x, y, cellWidth, cellHeight);
+
+        // [추가] 오늘 날짜면 파란색 굵은 2중 테두리
+        if (currentYear === todayYear && currentMonth === todayMonth && currentDrawDate === todayDate) {
+            ctx.strokeStyle = '#2196F3'; // 파란색
+            ctx.lineWidth = 2;
+            ctx.strokeRect(x + 2, y + 2, cellWidth - 4, cellHeight - 4);
+            ctx.strokeRect(x + 3, y + 3, cellWidth - 6, cellHeight - 6);
+        }
+
+        currentDrawDate++;
+    }
 
     function drawNote(notes, maxShowNotes, x, noteStartY) {
         if (notes.length > 0) {
@@ -793,72 +863,6 @@ function drawCanvas() {
                 }
             });
         }
-    }
-
-    for (let i = 0; i < 42; i++) {
-        if (i < firstDayIndex) continue;
-        if (currentDrawDate > lastDate) break;
-
-        const col = i % 7;
-        const row = Math.floor(i / 7);
-
-        const x = col * cellWidth;
-        const y = headerHeight + row * cellHeight;
-        const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(currentDrawDate).padStart(2, '0')}`;
-        const holidayName = holidays[dateStr];
-
-        // -- 날짜 숫자 --
-        ctx.font = '16px sans-serif';
-        ctx.textAlign = 'left';
-        ctx.textBaseline = 'top';
-
-        if (holidayName) ctx.fillStyle = sundayColor;
-        else if (col === 0) ctx.fillStyle = sundayColor;
-        else if (col === 6) ctx.fillStyle = saturdayColor; // [수정] 파랑색 약간 조정
-        else ctx.fillStyle = baseTextColor;            // [수정] 일반 날짜 색상 변수 사용
-
-        ctx.fillText(currentDrawDate, x + 5, y + 5);
-
-        // -- Holiday label --
-        let noteStartY = y + 25;
-        if (holidayName) {
-            ctx.font = '12px sans-serif';
-            ctx.fillStyle = sundayColor;
-            const holidayText = fitText(ctx, holidayName, cellWidth - 10);
-            ctx.fillText(holidayText, x + 5, noteStartY);
-            noteStartY += 15;
-        }
-
-        // -- 메모 텍스트 --
-        if (Array.isArray(notesData)) {
-            const notes = notesData.filter(n => n.date === dateStr &&
-                (!n.content.startsWith('#') && !n.content.startsWith('@')))
-                .sort((a, b) => b.content.localeCompare(a.content));
-            const english = notesData.filter(n => n.date === dateStr &&
-                (n.content.startsWith('#') || n.content.startsWith('@')))
-                .sort((a, b) => b.content.localeCompare(a.content));
-            const maxShowNotes = 3;
-            ctx.font = '14px sans-serif';
-            ctx.fillStyle = noteTextColor; // [수정] 메모 색상 변수 사용
-            drawNote(notes, maxShowNotes, x, noteStartY);
-            noteStartY += 15 * maxShowNotes + 15;
-            drawEnglishWord(english, x, noteStartY);
-        }
-
-        // -- 날짜 칸 테두리 --
-        ctx.strokeStyle = isDarkTheme ? '#555555' : '#dddddd';
-        ctx.lineWidth = 1;
-        ctx.strokeRect(x, y, cellWidth, cellHeight);
-
-        // [추가] 오늘 날짜면 파란색 굵은 2중 테두리
-        if (currentYear === todayYear && currentMonth === todayMonth && currentDrawDate === todayDate) {
-            ctx.strokeStyle = '#2196F3'; // 파란색
-            ctx.lineWidth = 2;
-            ctx.strokeRect(x + 2, y + 2, cellWidth - 4, cellHeight - 4);
-            ctx.strokeRect(x + 3, y + 3, cellWidth - 6, cellHeight - 6);
-        }
-
-        currentDrawDate++;
     }
 }
 
