@@ -59,6 +59,7 @@ func (a *App) startup(ctx context.Context) {
 			Title:   "DB Error",
 			Message: "테이블 생성 실패: " + err.Error(),
 		})
+		return
 	}
 
 	// [추가] NOTEPAD 필드 확인 및 생성
