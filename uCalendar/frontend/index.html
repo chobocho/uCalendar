@@ -40,6 +40,7 @@
                 <button id="noteSearchPrevBtn" type="button" title="Ctrl + <">이전</button>
                 <button id="noteSearchNextBtn" type="button" title="Ctrl + >">다음</button>
             </div>
+            <span id="note-char-count" class="note-char-count-panel">글자수: 0</span>
             <button onclick="saveNotePadWithNoti()" class="note-icon-btn" title="즉시 메모 저장">💾</button>
             <button onclick="showHelpPanel()" class="note-icon-btn" title="도움말">❓</button>
             <button onclick="closeNotePanel()" class="note-icon-btn" title="메모장 닫기">✖️</button>
@@ -47,12 +48,6 @@
         <div class="note-editor-container">
             <div id="line-numbers" class="line-numbers">1</div>
             <textarea id="note-editor" class="note-editor" spellcheck="false"></textarea>
-        </div>
-        <div class="note-panel-footer">
-            <span id="note-char-count">글자수: 0</span>
-            <div class="note-footer-btns">
-
-            </div>
         </div>
     </div>
 
