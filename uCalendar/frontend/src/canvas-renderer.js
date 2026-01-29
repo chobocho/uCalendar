@@ -157,7 +157,7 @@ export const CanvasRenderer = {
                     const displayText = this.fitText(content, state.cellWidth - 10);
                     state.ctx.fillText(displayText, x + 5, noteStartY + (idx * 15));
 
-                    if (note.content.length > 14) {
+                    if (note.content.length > 13) {
                         state.noteHoverTargets.push({
                             x: x + 3,
                             y: noteStartY + (idx * 15) - 2,

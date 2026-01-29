@@ -46,6 +46,8 @@ export const Notepad = {
 
         noteEditor.onkeydown = (e) => KeyboardHandler.handleNotepad(e);
 
+        noteEditor.oncontextmenu = (e) => this.handleContextMenu(e);
+
         this.startAutoSave();
     },
 
@@ -162,6 +164,33 @@ export const Notepad = {
         lineNumbers.scrollTop = scrollTop;
     },
 
+    handleContextMenu(e) {
+        const noteEditor = document.getElementById('note-editor');
+        if (!noteEditor) return;
+
+        const start = noteEditor.selectionStart;
+        const end = noteEditor.selectionEnd;
+
+        // 선택된 텍스트가 있는지 확인
+        if (start === end) return;
+
+        const selectedText = noteEditor.value.substring(start, end).trim();
+
+        // URL 패턴 확인 (http://, https://, www. 로 시작)
+        const urlPattern = /^(https?:\/\/|www\.)/i;
+        if (urlPattern.test(selectedText)) {
+            e.preventDefault();
+
+            let url = selectedText;
+            // www로 시작하면 https:// 추가
+            if (url.startsWith('www.')) {
+                url = 'https://' + url;
+            }
+
+            window.go.main.App.OpenURL(url);
+        }
+    },
+
     showHelpPanel() {
         const helpText = `메모장 단축키:
 
@@ -184,6 +213,8 @@ Ctrl + Shift + O - □ (박스)
 Ctrl + Shift + R - ※
 Ctrl + Shift + X - ❎
 Ctrl + Shift + Z - 🟩
+
+URL을 드래그 후 우클릭하면 브라우저로 열립니다.
 `;
 
         window.go.main.App.ShowMessage("메모장 도움말", helpText);

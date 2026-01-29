@@ -6,7 +6,8 @@ import (
 	"fmt"
 	"log"
 
-	_ "github.com/glebarez/go-sqlite"          // ✅ Pure Go 드라이버 (해결책 1번)
+	_ "github.com/glebarez/go-sqlite" // ✅ Pure Go 드라이버 (해결책 1번)
+	"github.com/pkg/browser"
 	"github.com/wailsapp/wails/v2/pkg/runtime" // ✅ [추가] 런타임 패키지
 )
 
@@ -192,6 +193,11 @@ func (a *App) ShowMessage(title string, message string) {
 		Title:   title,
 		Message: message,
 	})
+}
+
+func (a *App) OpenURL(url string) {
+	log.Println("OpenURL: " + url)
+	browser.OpenURL(url)
 }
 
 // Quit : 앱 종료 함수 (Frontend에서 호출)
