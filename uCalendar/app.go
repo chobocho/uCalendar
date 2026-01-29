@@ -186,6 +186,14 @@ func (a *App) DeleteNote(id int) string {
 	return "Deleted"
 }
 
+func (a *App) ShowMessage(title string, message string) {
+	runtime.MessageDialog(a.ctx, runtime.MessageDialogOptions{
+		Type:    runtime.InfoDialog,
+		Title:   title,
+		Message: message,
+	})
+}
+
 // Quit : 앱 종료 함수 (Frontend에서 호출)
 func (a *App) Quit() {
 	runtime.Quit(a.ctx)

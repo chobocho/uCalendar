@@ -30,6 +30,10 @@ export function SaveOrUpdateNoteByDate(arg1, arg2) {
   return window['go']['main']['App']['SaveOrUpdateNoteByDate'](arg1, arg2);
 }
 
+export function ShowMessage(arg1, arg2) {
+  return window['go']['main']['App']['ShowMessage'](arg1, arg2);
+}
+
 export function UpdateNote(arg1, arg2) {
   return window['go']['main']['App']['UpdateNote'](arg1, arg2);
 }

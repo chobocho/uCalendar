@@ -16,4 +16,6 @@ export function SaveNote(arg1:string,arg2:string):Promise<string>;
 
 export function SaveOrUpdateNoteByDate(arg1:string,arg2:string):Promise<string>;
 
+export function ShowMessage(arg1:string,arg2:string):Promise<void>;
+
 export function UpdateNote(arg1:number,arg2:string):Promise<string>;

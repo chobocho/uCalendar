@@ -82,7 +82,7 @@ export const Notepad = {
 
     async saveWithNotification() {
         const msg = await this.save();
-        alert(msg);
+        await window.go.main.App.ShowMessage("메모 저장", msg);
     },
 
     startAutoSave() {
