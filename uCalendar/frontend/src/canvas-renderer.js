@@ -73,7 +73,30 @@ export const CanvasRenderer = {
             noteStartY = this.drawNotes(dateStr, x, noteStartY, colors);
             this.drawCellBorder(x, y, state.currentYear, state.currentMonth, currentDrawDate, todayYear, todayMonth, todayDate, colors);
 
+            if (col === 1) {
+                const date = new Date(state.currentYear, state.currentMonth, currentDrawDate);
+                const weekNum = getISO8601WeekNumber(date);
+                state.ctx.font = '10px sans-serif';
+                state.ctx.textAlign = 'right';
+                state.ctx.textBaseline = 'bottom';
+                state.ctx.fillStyle = colors.baseText;
+                state.ctx.fillText(`W${weekNum}`, x + state.cellWidth - 3, y + state.cellHeight - 3);
+            }
             currentDrawDate++;
+        }
+
+        function getISO8601WeekNumber(date) {
+            const MILLISECONDS_PER_DAY = 86400000;
+            const MILLISECONDS_PER_WEEK = 604800000;
+            const THURSDAY = 4;
+
+            const dayOfWeek = date.getDay() || 7;
+            const nearestThursday = new Date(date.getTime() + (THURSDAY - dayOfWeek) * MILLISECONDS_PER_DAY);
+
+            const jan4 = new Date(nearestThursday.getFullYear(), 0, 4);
+            const jan4Thursday = new Date(jan4.getTime() + (THURSDAY - (jan4.getDay() || 7)) * MILLISECONDS_PER_DAY);
+
+            return Math.round((nearestThursday.getTime() - jan4Thursday.getTime()) / MILLISECONDS_PER_WEEK) + 1;
         }
     },
 
