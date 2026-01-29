@@ -178,12 +178,12 @@ Ctrl + L - 구분선 삽입
 
 기호 삽입:
 Ctrl + Shift + A - →
-Ctrl + Shift + C - ✓ (체크마크)
+Ctrl + Shift + C - ✅ (체크마크)
 Ctrl + Shift + I - ■ (체크박스)
 Ctrl + Shift + O - □ (박스)
 Ctrl + Shift + R - ※
 Ctrl + Shift + X - ❎
-Ctrl + Shift + Z - ✅
+Ctrl + Shift + Z - 🟩
 `;
 
         window.go.main.App.ShowMessage("메모장 도움말", helpText);

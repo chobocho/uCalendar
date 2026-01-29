@@ -110,7 +110,7 @@ export const KeyboardHandler = {
 
         if (e.ctrlKey && e.shiftKey && (e.key === 'C' || e.key === 'c')) {
             e.preventDefault();
-            Notepad.insertSymbol('√');
+            Notepad.insertSymbol('✅');
             return;
         }
 
@@ -134,7 +134,7 @@ export const KeyboardHandler = {
 
         if (e.ctrlKey && e.shiftKey && (e.key === 'Z' || e.key === 'z')) {
             e.preventDefault();
-            Notepad.insertSymbol('✅');
+            Notepad.insertSymbol('🟩');
             return;
         }
 
