@@ -53,6 +53,20 @@ export const KeyboardHandler = {
     },
 
     handleNotepad(e) {
+        if (e.key === 'PageUp') {
+            e.preventDefault();
+            const noteEditor = document.getElementById('note-editor');
+            noteEditor.scrollTop -= noteEditor.clientHeight;
+            return;
+        }
+
+        if (e.key === 'PageDown') {
+            e.preventDefault();
+            const noteEditor = document.getElementById('note-editor');
+            noteEditor.scrollTop += noteEditor.clientHeight;
+            return;
+        }
+
         if (e.ctrlKey && (e.key === '6' || e.key === 'h' || e.key === 'H')) {
             e.preventDefault();
             const noteEditor = document.getElementById('note-editor');
