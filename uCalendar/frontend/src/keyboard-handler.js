@@ -53,14 +53,14 @@ export const KeyboardHandler = {
     },
 
     handleNotepad(e) {
-        if (e.key === 'PageUp') {
+        if (e.key === 'PageUp' || (e.altKey && (e.key === 'B' || e.key === 'b'))) {
             e.preventDefault();
             const noteEditor = document.getElementById('note-editor');
             noteEditor.scrollTop -= noteEditor.clientHeight;
             return;
         }
 
-        if (e.key === 'PageDown') {
+        if (e.key === 'PageDown' || (e.altKey && (e.key === 'F' || e.key === 'f'))) {
             e.preventDefault();
             const noteEditor = document.getElementById('note-editor');
             noteEditor.scrollTop += noteEditor.clientHeight;
@@ -114,21 +114,21 @@ export const KeyboardHandler = {
             return;
         }
 
-        if (e.ctrlKey && e.shiftKey && (e.key === 'O' || e.key === 'o')) {
+        if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i')) {
             e.preventDefault();
             Notepad.insertSymbol('■');
+            return;
+        }
+
+        if (e.ctrlKey && e.shiftKey && (e.key === 'O' || e.key === 'o')) {
+            e.preventDefault();
+            Notepad.insertSymbol('□');
             return;
         }
 
         if (e.ctrlKey && e.shiftKey && (e.key === 'R' || e.key === 'r')) {
             e.preventDefault();
             Notepad.insertSymbol('※');
-            return;
-        }
-
-        if (e.ctrlKey && e.shiftKey && (e.key === 'W' || e.key === 'w')) {
-            e.preventDefault();
-            Notepad.insertSymbol('□');
             return;
         }
     }
