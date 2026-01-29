@@ -160,6 +160,33 @@ export const Notepad = {
         const scrollTop = noteEditor.scrollTop;
         lineNumbers.innerHTML = lineNumbersHTML;
         lineNumbers.scrollTop = scrollTop;
+    },
+
+    showHelpPanel() {
+        const helpText = `메모장 단축키:
+
+Esc - 메모장 닫기
+
+Alt + B - 한 페이지 앞으로
+Alt + F - 한 페이지 뒤로
+
+Ctrl + F - 검색 하기
+Ctrl + <  - 이전 검색 결과로 이동
+Ctrl + >  - 다음 검색 결과로 이동
+
+Ctrl + L - 구분선 삽입
+
+기호 삽입:
+Ctrl + Shift + A - →
+Ctrl + Shift + C - ✓ (체크마크)
+Ctrl + Shift + I - ■ (체크박스)
+Ctrl + Shift + O - □ (박스)
+Ctrl + Shift + R - ※
+Ctrl + Shift + X - ❎
+Ctrl + Shift + Z - ✅
+`;
+
+        window.go.main.App.ShowMessage("메모장 도움말", helpText);
     }
 };
 
@@ -167,3 +194,5 @@ window.openNotePanel = () => Notepad.open();
 window.closeNotePanel = () => Notepad.close();
 window.saveNotePad = () => Notepad.save();
 window.saveNotePadWithNoti = () => Notepad.saveWithNotification();
+window.showHelpPanel = () => Notepad.showHelpPanel();
+

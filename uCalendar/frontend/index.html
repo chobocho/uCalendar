@@ -35,11 +35,13 @@
         <div class="note-panel-header">
             <span class="note-panel-title">📝 Chobocho's 메모장</span>
             <div class="note-search-controls">
-                <input id="noteSearchInput" type="text" placeholder="메모장 검색">
+                <input id="noteSearchInput" type="text" placeholder="메모장 검색 / Ctrl + F">
                 <button id="noteSearchBtn" type="button">검색</button>
-                <button id="noteSearchNextBtn" type="button">다음</button>
+                <button id="noteSearchPrevBtn" type="button" title="Ctrl + <">이전</button>
+                <button id="noteSearchNextBtn" type="button" title="Ctrl + >">다음</button>
             </div>
             <button onclick="saveNotePadWithNoti()" class="note-icon-btn" title="즉시 메모 저장">💾</button>
+            <button onclick="showHelpPanel()" class="note-icon-btn" title="도움말">❓</button>
             <button onclick="closeNotePanel()" class="note-icon-btn" title="메모장 닫기">✖️</button>
         </div>
         <div class="note-editor-container">

@@ -8,13 +8,18 @@ export const NoteSearchUI = {
     setup() {
         state.elements.noteSearchInput = document.getElementById('noteSearchInput');
         state.elements.noteSearchBtn = document.getElementById('noteSearchBtn');
+        state.elements.noteSearchPrevBtn = document.getElementById('noteSearchPrevBtn');
         state.elements.noteSearchNextBtn = document.getElementById('noteSearchNextBtn');
 
         if (!state.elements.noteSearchInput || !state.elements.noteSearchBtn ||
-            !state.elements.noteSearchNextBtn) return;
+            !state.elements.noteSearchPrevBtn || !state.elements.noteSearchNextBtn) return;
 
         state.elements.noteSearchBtn.addEventListener('click', () => {
             this.find({ startFromBeginning: true });
+        });
+
+        state.elements.noteSearchPrevBtn.addEventListener('click', () => {
+            this.findPrev();
         });
 
         state.elements.noteSearchNextBtn.addEventListener('click', () => {

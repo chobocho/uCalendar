@@ -131,5 +131,17 @@ export const KeyboardHandler = {
             Notepad.insertSymbol('※');
             return;
         }
+
+        if (e.ctrlKey && e.shiftKey && (e.key === 'Z' || e.key === 'z')) {
+            e.preventDefault();
+            Notepad.insertSymbol('✅');
+            return;
+        }
+
+        if (e.ctrlKey && e.shiftKey && (e.key === 'X' || e.key === 'x')) {
+            e.preventDefault();
+            Notepad.insertSymbol('❎');
+            return;
+        }
     }
 };

@@ -30,6 +30,7 @@ export const state = {
         searchEmpty: null,
         noteSearchInput: null,
         noteSearchBtn: null,
+        noteSearchPrevBtn: null,
         noteSearchNextBtn: null,
     },
 
