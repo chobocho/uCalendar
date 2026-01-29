@@ -1,6 +1,7 @@
 # uCalendar
 
-![screen_shot](./img/screen_shot.png)
+![screen_shot](./img/screen_shot.png)  
+![screen_shot](./img/screen_shot_memo.png)  
 
 
 ## How to build
@@ -17,7 +18,8 @@
 ✅ 일정 완료 버튼 추가  
 ✅ 일정 수정 기능 추가    
 ✅ 일정 검색 기능 추가    
-✅ # 으로 시작하면 영어 단어로 인식 하도록 개선  
+✅ # 으로 시작하면 영어 단어로 인식 하도록 구현    
+✅ ＠ 으로 시작하면 메모로 인식 하도록 구현 
 
 ## 구현 예정 기능
 🟩 사용자 휴일 추가 기능  
