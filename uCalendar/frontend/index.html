@@ -18,6 +18,7 @@
             <button class ="nav-home-btn" onclick="openNotePanel()" title="메모장 (Ctrl + N)" aria-label="메모장">📝</button>
         </div>
         <div>
+            <button class="nav-home-btn" onclick="showHelpPanel()" title="도움말">❓</button>
             <button class ="nav-home-btn" onclick="toggleTheme()" title="테마 변경" style="margin-left: 10px;">🌙</button>
         </div>
     </div>
@@ -42,7 +43,7 @@
             </div>
             <span id="note-char-count" class="note-char-count-panel">글자수: 0</span>
             <button onclick="saveNotePadWithNoti()" class="note-icon-btn" title="즉시 메모 저장">💾</button>
-            <button onclick="showHelpPanel()" class="note-icon-btn" title="도움말">❓</button>
+            <button onclick="showNoteHelpPanel()" class="note-icon-btn" title="노트 도움말">❓</button>
             <button onclick="closeNotePanel()" class="note-icon-btn" title="메모장 닫기">✖️</button>
         </div>
         <div class="note-editor-container">

@@ -225,5 +225,5 @@ window.openNotePanel = () => Notepad.open();
 window.closeNotePanel = () => Notepad.close();
 window.saveNotePad = () => Notepad.save();
 window.saveNotePadWithNoti = () => Notepad.saveWithNotification();
-window.showHelpPanel = () => Notepad.showHelpPanel();
+window.showNoteHelpPanel = () => Notepad.showHelpPanel();
 
