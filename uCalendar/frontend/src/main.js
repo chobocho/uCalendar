@@ -12,6 +12,7 @@ import { TooltipManager } from './tooltip.js';
 import { SearchPanel } from './search-panel.js';
 import { NoteSearchUI } from './note-search.js';
 import { DataManager } from './data-manager.js';
+import { Modal } from './modal.js';
 import './theme.js';
 import './notepad.js';
 import './keyboard-handler.js';
@@ -39,7 +40,7 @@ Esc - 열린 패널 닫기
 
 메모장 도움말은 메모장 상단의 ❓ 버튼에서 확인할 수 있습니다.`;
 
-    window.go.main.App.ShowMessage('uCalendar 도움말', helpText);
+    Modal.showMessage('uCalendar 도움말', helpText);
 }
 
 // ========================================

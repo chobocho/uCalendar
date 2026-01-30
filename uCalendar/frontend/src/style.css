@@ -96,6 +96,78 @@ canvas {
     box-shadow: 0 4px 6px rgba(0,0,0,0.3);
 }
 
+/* Custom Modal 스타일 */
+.custom-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 200;
+    -webkit-app-region: no-drag;
+}
+
+.custom-modal {
+    background: var(--modal-bg);
+    color: var(--modal-text);
+    padding: 0;
+    border-radius: 8px;
+    min-width: 400px;
+    max-width: 600px;
+    max-height: 80vh;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+}
+
+.custom-modal-header {
+    padding: 15px 20px;
+    background: rgba(0, 0, 0, 0.05);
+    border-bottom: 1px solid var(--search-border);
+    font-weight: bold;
+    border-radius: 8px 8px 0 0;
+}
+
+body.dark-theme .custom-modal-header {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.custom-modal-body {
+    padding: 20px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.custom-modal-footer {
+    padding: 8px 20px;
+    display: flex;
+    justify-content: flex-end;
+    border-top: 1px solid var(--search-border);
+}
+
+.custom-modal-btn {
+    padding: 8px 24px;
+    border-radius: 6px;
+    border: 1px solid var(--search-border);
+    background: var(--modal-bg);
+    color: var(--modal-text);
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.custom-modal-btn:hover {
+    background: rgba(0, 0, 0, 0.08);
+}
+
+body.dark-theme .custom-modal-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
 /* 다크모드에서 입력창과 버튼 가시성 확보 */
 body.dark-theme textarea {
     background-color: #404040;

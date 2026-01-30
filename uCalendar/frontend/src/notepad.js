@@ -5,6 +5,7 @@ import { state } from './state.js';
 import { CONSTANTS } from './constants.js';
 import { SearchPanel } from './search-panel.js';
 import { KeyboardHandler } from './keyboard-handler.js';
+import { Modal } from './modal.js';
 
 export const Notepad = {
     async open() {
@@ -84,7 +85,7 @@ export const Notepad = {
 
     async saveWithNotification() {
         const msg = await this.save();
-        await window.go.main.App.ShowMessage("메모 저장", msg);
+        await Modal.showMessage("메모 저장", msg);
     },
 
     startAutoSave() {
@@ -217,7 +218,7 @@ Ctrl + Shift + Z - 🟩
 URL을 드래그 후 우클릭하면 브라우저로 열립니다.
 `;
 
-        window.go.main.App.ShowMessage("메모장 도움말", helpText);
+        Modal.showMessage("메모장 도움말", helpText);
     }
 };
 
