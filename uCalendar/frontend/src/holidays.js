@@ -11,6 +11,7 @@ export const HolidaysManager = {
         { date: '03-01', name: '삼일절' },
         { date: '05-05', name: '어린이날' },
         { date: '06-06', name: '현충일' },
+        { date: '07-17', name: '제헌절' },
         { date: '08-15', name: '광복절' },
         { date: '10-03', name: '개천절' },
         { date: '10-09', name: '한글날' },
