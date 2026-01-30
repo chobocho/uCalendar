@@ -136,6 +136,21 @@ export const CanvasRenderer = {
             .filter(n => n.date === dateStr && (n.content.startsWith('#') || n.content.startsWith('@')))
             .sort((a, b) => b.content.localeCompare(a.content));
 
+        if (notes.length > 5) {
+            const allNoteText = notes.map(note => note.content).filter(Boolean).join('\n');
+
+            if (allNoteText) {
+                const dateAreaY = noteStartY - 25;
+                state.noteHoverTargets.push({
+                    x: x + 3,
+                    y: dateAreaY + 3,
+                    w: 30,
+                    h: 20,
+                    text: allNoteText
+                });
+            }
+        }
+
         state.ctx.font = '14px sans-serif';
         state.ctx.fillStyle = colors.noteText;
 
