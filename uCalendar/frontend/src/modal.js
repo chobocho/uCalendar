@@ -26,14 +26,22 @@ export const Modal = {
 
             const btn = modal.querySelector('.custom-modal-btn');
             const closeModal = () => {
+                document.removeEventListener('keydown', handleEscape);
                 modal.remove();
                 resolve();
+            };
+
+            const handleEscape = (e) => {
+                if (e.key === 'Escape') {
+                    closeModal();
+                }
             };
 
             btn.addEventListener('click', closeModal);
             modal.addEventListener('click', (e) => {
                 if (e.target === modal) closeModal();
             });
+            document.addEventListener('keydown', handleEscape);
         });
     }
 };
