@@ -136,7 +136,7 @@ export const CanvasRenderer = {
             .filter(n => n.date === dateStr && (n.content.startsWith('#') || n.content.startsWith('@')))
             .sort((a, b) => b.content.localeCompare(a.content));
 
-        if (notes.length >= 5) {
+        if (notes.length > 0) {
             const allNoteText = notes.map(note => note.content).filter(Boolean).join('\n');
 
             if (allNoteText) {
