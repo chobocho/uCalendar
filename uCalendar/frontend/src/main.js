@@ -52,6 +52,7 @@ window.onload = () => {
 
     window.addEventListener('resize', () => CanvasRenderer.resize());
     state.canvas.addEventListener('click', (e) => CalendarInteraction.handleCanvasClick(e));
+    state.canvas.addEventListener('contextmenu', (e) => CalendarInteraction.handleCanvasContextMenu(e));
     state.canvas.addEventListener('mousemove', (e) => TooltipManager.handleHover(e));
     state.canvas.addEventListener('mouseleave', () => TooltipManager.hide());
 
