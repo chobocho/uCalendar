@@ -784,3 +784,7 @@ body.dark-theme .note-item:hover {
     font-size: 20px;
     background: none;
 }
+.nav-home-btn:hover {
+    background: rgba(128, 128, 128, 0.48);
+    border-radius: 30%;
+}
