@@ -13,6 +13,8 @@ export const state = {
     notesData: [],
     allNotesData: [],
     selectedDateStr: "",
+    editingNoteId: null,
+    editingNoteDate: null,
 
     // Canvas state
     canvas: null,

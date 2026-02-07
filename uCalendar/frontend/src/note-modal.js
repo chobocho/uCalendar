@@ -33,6 +33,9 @@ export const NoteModal = {
         contentSpan.className = 'note-content';
         contentSpan.textContent = note.content;
 
+        const actionsDiv = document.createElement('div');
+        actionsDiv.className = 'note-item-actions';
+
         const checkBtn = this.createButton('check-btn', '✔️', '완료 표시', () =>
             this.checkNote(note.id, '✅', '\uD83D\uDEA9', note.content)
         );
@@ -42,14 +45,15 @@ export const NoteModal = {
         );
 
         const editBtn = this.createButton('edit-btn', '✒️', '노트 편집', () =>
-            this.editNote(note.id, note.content)
+            this.openEditModal(note.id, note.date, note.content)
         );
 
         const deleteBtn = this.createButton('del-btn', '\u274C', '노트 삭제', () =>
             this.deleteNote(note.id, note.content)
         );
 
-        li.append(contentSpan, checkBtn, cancelBtn, editBtn, deleteBtn);
+        actionsDiv.append(checkBtn, cancelBtn, editBtn, deleteBtn);
+        li.append(contentSpan, actionsDiv);
         return li;
     },
 
@@ -81,15 +85,61 @@ export const NoteModal = {
         await this.refreshAndReopen();
     },
 
-    async editNote(id, text) {
-        const nextContent = prompt('일정 수정 하기', text);
-        if (nextContent === null || !nextContent.trim()) {
+    openEditModal(id, date, content) {
+        state.editingNoteId = id;
+        state.editingNoteDate = date;
+
+        document.getElementById('editNoteDate').value = date;
+        document.getElementById('editNoteContent').value = content;
+        document.getElementById('editNoteModal').classList.remove('hidden');
+    },
+
+    closeEditModal() {
+        document.getElementById('editNoteModal').classList.add('hidden');
+        document.getElementById('editNoteDate').value = '';
+        document.getElementById('editNoteContent').value = '';
+        state.editingNoteId = null;
+        state.editingNoteDate = null;
+    },
+
+    async confirmEditNote() {
+        const newDate = document.getElementById('editNoteDate').value;
+        const newContent = document.getElementById('editNoteContent').value.trim();
+
+        if (!newContent) {
             alert('빈 일정으로 수정할 수 없습니다.');
             return;
         }
 
-        await window.go.main.App.UpdateNote(id, nextContent);
-        await this.refreshAndReopen();
+        const id = state.editingNoteId;
+        const oldDate = state.editingNoteDate;
+
+        // 날짜가 변경된 경우
+        if (newDate !== oldDate) {
+            // 기존 노트 삭제
+            await window.go.main.App.DeleteNote(id);
+            // 새로운 날짜에 노트 저장
+            await window.go.main.App.SaveNote(newDate, newContent);
+        } else {
+            // 날짜가 같으면 내용만 업데이트
+            await window.go.main.App.UpdateNote(id, newContent);
+        }
+
+        this.closeEditModal();
+
+        // 변경된 날짜의 일자 추출
+        const day = parseInt(newDate.split('-')[2]);
+        const [year, month] = newDate.split('-').map(Number);
+
+        // 현재 보고 있는 달력과 다른 달이면 이동
+        if (year !== state.currentYear || month !== state.currentMonth + 1) {
+            state.currentYear = year;
+            state.currentMonth = month - 1;
+        }
+
+        await CalendarRenderer.render();
+        await DataManager.refreshAllNotes();
+        this.open(day);
     },
 
     async deleteNote(id, text) {
@@ -121,7 +171,8 @@ export const NoteModal = {
 };
 
 window.closeModal = () => NoteModal.close();
+window.closeEditModal = () => NoteModal.closeEditModal();
+window.confirmEditNote = () => NoteModal.confirmEditNote();
 window.checkNote = (id, btnType, ignoreType, text) => NoteModal.checkNote(id, btnType, ignoreType, text);
-window.editNote = (id, text) => NoteModal.editNote(id, text);
 window.deleteNote = (id, text) => NoteModal.deleteNote(id, text);
 window.saveNote = () => NoteModal.saveNote();

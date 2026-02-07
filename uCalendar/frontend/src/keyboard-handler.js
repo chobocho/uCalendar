@@ -45,6 +45,11 @@ export const KeyboardHandler = {
         }
 
         if (e.key === 'Escape') {
+            const editModal = document.getElementById('editNoteModal');
+            if (editModal && !editModal.classList.contains('hidden')) {
+                NoteModal.closeEditModal();
+                return;
+            }
             SearchPanel.hide();
             NoteModal.close();
             Notepad.close();

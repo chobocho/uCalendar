@@ -80,42 +80,277 @@ canvas {
 .modal {
     position: absolute;
     top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.5);
+    background: rgba(0,0,0,0.6);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 100;
+    backdrop-filter: blur(4px);
+    animation: fadeIn 0.2s ease;
 }
+
+@keyframes modalFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-30px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
 .modal-content {
-    /* [수정] 변수 사용 */
     background: var(--modal-bg);
     color: var(--modal-text);
-    padding: 20px;
-    border-radius: 8px;
-    width: 400px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    border-radius: 16px;
+    width: 520px;
+    max-width: 90vw;
+    max-height: 90vh;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
-/* 다크모드에서 입력창과 버튼 가시성 확보 */
-body.dark-theme textarea {
-    background-color: #404040;
-    color: white;
-    border: 1px solid #555;
+.modern-modal {
+    animation: modalSlideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-#noteInput { width: 100%; height: 80px; margin-top: 10px; }
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    border-bottom: 1px solid var(--search-border);
+    background: linear-gradient(135deg, rgba(33, 150, 243, 0.1), rgba(103, 58, 183, 0.1));
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--modal-text);
+}
+
+.modal-close-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: var(--modal-text);
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: all 0.2s;
+    opacity: 0.6;
+}
+
+.modal-close-btn:hover {
+    opacity: 1;
+    background: rgba(0, 0, 0, 0.1);
+    transform: rotate(90deg);
+}
+
+body.dark-theme .modal-close-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.modal-body {
+    padding: 30px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.notes-list-container {
+    margin-bottom: 15px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.notes-list-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.notes-list-container::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+}
+
+body.dark-theme .notes-list-container::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+}
+
 #modalNoteList {
-    width: 100%;
     margin: 0;
     padding: 0;
     list-style: none;
 }
-.button-group { margin-top: 10px; display: flex; justify-content: flex-end; gap: 5px; }
+
+.note-input-section {
+    margin-top: 16px;
+}
+
+#noteInput {
+    width: 100%;
+    padding: 2px;
+    border: 2px solid var(--search-border);
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 60px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background: transparent;
+    color: var(--modal-text);
+}
+
+#noteInput:focus {
+    outline: none;
+    border-color: #2196F3;
+    box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+}
+
+body.dark-theme #noteInput {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: #444;
+}
+
+body.dark-theme #noteInput:focus {
+    border-color: #42A5F5;
+    box-shadow: 0 0 0 3px rgba(66, 165, 245, 0.15);
+}
+
 .note-hint {
-    font-size: 11px;
+    font-size: 12px;
     color: #888888;
-    margin-right: auto;
-    line-height: 1.2;
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid var(--search-border);
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    background: rgba(0, 0, 0, 0.02);
+}
+
+body.dark-theme .modal-footer {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.btn-primary, .btn-secondary {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #2196F3, #673AB7);
+    color: white;
+    box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+.btn-secondary {
+    background: var(--modal-bg);
+    color: var(--modal-text);
+    border: 2px solid var(--search-border);
+}
+
+.btn-secondary:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+body.dark-theme .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.btn-icon {
+    font-size: 16px;
+}
+
+/* 폼 그룹 스타일 */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--modal-text);
+}
+
+.form-group input[type="date"],
+.form-group textarea {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid var(--search-border);
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background: transparent;
+    color: var(--modal-text);
+}
+
+.form-group input[type="date"]:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #2196F3;
+    box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+}
+
+body.dark-theme .form-group input[type="date"],
+body.dark-theme .form-group textarea {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: #444;
+    color: white;
+}
+
+body.dark-theme .form-group input[type="date"]:focus,
+body.dark-theme .form-group textarea:focus {
+    border-color: #42A5F5;
+    box-shadow: 0 0 0 3px rgba(66, 165, 245, 0.15);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.date-input {
+    cursor: pointer;
+}
+
+/* 편집 모달 크기 조정 */
+.edit-modal {
+    width: 480px;
 }
 
 .search-panel {
@@ -456,17 +691,75 @@ body.dark-theme .custom-modal-btn:hover {
     background: rgba(255, 255, 255, 0.1);
 }
 .note-item {
-    display: flex; justify-content: space-between;
-    border-bottom: 1px solid #eee; padding: 5px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.03);
+    border: 1px solid var(--search-border);
+    transition: all 0.2s;
 }
+
+.note-item:hover {
+    background: rgba(33, 150, 243, 0.08);
+    border-color: rgba(33, 150, 243, 0.3);
+    transform: translateX(2px);
+}
+
+body.dark-theme .note-item {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+body.dark-theme .note-item:hover {
+    background: rgba(66, 165, 245, 0.15);
+}
+
 .note-content {
     flex: 1;
     text-align: left;
+    word-break: break-word;
+    line-height: 1.4;
 }
 
-.check-btn { color: blue; cursor: pointer; border: none; background: none;}
-.edit-btn { color: orange; cursor: pointer; border: none; background: none;}
-.del-btn { color: red; cursor: pointer; border: none; background: none;}
+.note-item-actions {
+    display: flex;
+    gap: 4px;
+    margin-left: 8px;
+}
+
+.check-btn, .edit-btn, .del-btn {
+    cursor: pointer;
+    border: none;
+    background: none;
+    padding: 0px;
+    border-radius: 6px;
+    font-size: 16px;
+    transition: all 0.2s;
+    opacity: 0.7;
+}
+
+.check-btn:hover, .edit-btn:hover, .del-btn:hover {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.check-btn {
+    filter: grayscale(0.3);
+}
+
+.check-btn:hover {
+    background: rgba(76, 175, 80, 0.1);
+}
+
+.edit-btn:hover {
+    background: rgba(255, 152, 0, 0.1);
+}
+
+.del-btn:hover {
+    background: rgba(244, 67, 54, 0.1);
+}
 
 /* 상단바 스타일 업데이트 */
 .nav-bar {
