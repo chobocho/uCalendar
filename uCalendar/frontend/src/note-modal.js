@@ -5,6 +5,30 @@ import { state } from './state.js';
 import { CalendarRenderer } from './calendar-renderer.js';
 import { DataManager } from './data-manager.js';
 
+// Prevent PageUp/PageDown default behavior in textareas (register once)
+const preventPageNav = (e) => {
+    if (e.key === 'PageUp' || e.key === 'PageDown') {
+        e.preventDefault();
+    }
+};
+
+const initKeydownGuards = () => {
+    const noteInputEl = document.getElementById('noteInput');
+    if (noteInputEl) {
+        noteInputEl.addEventListener('keydown', preventPageNav, { passive: false });
+    }
+    const editNoteContentEl = document.getElementById('editNoteContent');
+    if (editNoteContentEl) {
+        editNoteContentEl.addEventListener('keydown', preventPageNav, { passive: false });
+    }
+};
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initKeydownGuards, { once: true });
+} else {
+    initKeydownGuards();
+}
+
 export const NoteModal = {
     async open(day) {
         state.selectedDateStr = `${state.currentYear}-${String(state.currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
@@ -23,6 +47,7 @@ export const NoteModal = {
         });
 
         document.getElementById('noteModal').classList.remove('hidden');
+        document.getElementById('noteInput').focus();
     },
 
     createNoteItem(note) {
@@ -92,6 +117,7 @@ export const NoteModal = {
         document.getElementById('editNoteDate').value = date;
         document.getElementById('editNoteContent').value = content;
         document.getElementById('editNoteModal').classList.remove('hidden');
+        document.getElementById('editNoteContent').focus();
     },
 
     closeEditModal() {
