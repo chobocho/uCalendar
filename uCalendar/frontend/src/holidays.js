@@ -2,6 +2,19 @@
 // Holidays Data
 // ========================================
 export const HolidaysManager = {
+    customHolidays: {},
+
+    async loadCustomHolidays() {
+        try {
+            if (window.go && window.go.main && window.go.main.App && window.go.main.App.LoadCustomHolidays) {
+                this.customHolidays = await window.go.main.App.LoadCustomHolidays();
+                console.log('Custom holidays loaded:', this.customHolidays);
+            }
+        } catch (e) {
+            console.error('Failed to load custom holidays:', e);
+        }
+    },
+
     get(year) {
     const holidays = {};
 
@@ -37,7 +50,7 @@ export const HolidaysManager = {
             '10-05': '추석 연휴', '10-06': '추석', '10-07': '추석 연휴', '10-08': '대체공휴일'
         },
         2026: {
-            '02-16': '설날 연휴', '02-17': '설날', '02-18': '설날 연휴',
+            '02-16': '설날 연휴', '02-17': '설날', '02-18': '설날 연휴', '03-02': '대체공휴일',
             '05-24': '부처님오신날', '05-25': '대체공휴일',
             '09-24': '추석 연휴', '09-25': '추석', '09-26': '추석 연휴'
         },
@@ -102,6 +115,13 @@ export const HolidaysManager = {
             }
             return formatted;
         })());
+    }
+
+    // (3) 사용자 정의 공휴일 반영
+    for (const [date, name] of Object.entries(this.customHolidays)) {
+        if (date.startsWith(year.toString())) {
+            holidays[date] = name;
+        }
     }
 
         return holidays;

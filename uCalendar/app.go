@@ -6,6 +6,9 @@ import (
 	"fmt"
 	"log"
 
+	"os"
+	"strings"
+
 	_ "github.com/glebarez/go-sqlite" // ✅ Pure Go 드라이버 (해결책 1번)
 	"github.com/pkg/browser"
 	"github.com/wailsapp/wails/v2/pkg/runtime" // ✅ [추가] 런타임 패키지
@@ -132,6 +135,35 @@ func (a *App) GetNoteByDate(date string) Note {
 		return Note{}
 	}
 	return n
+}
+
+// LoadCustomHolidays: holiday.txt 파일을 읽어서 맵 형태로 반환합니다.
+func (a *App) LoadCustomHolidays() map[string]string {
+	holidays := make(map[string]string)
+	data, err := os.ReadFile("holiday.txt")
+	if err != nil {
+		// 파일이 없거나 읽기 오류 시 빈 결과 반환
+		log.Println("holiday.txt not found or error reading:", err)
+		return holidays
+	}
+
+	lines := strings.Split(string(data), "\n")
+	for _, line := range lines {
+		line = strings.TrimSpace(line)
+		if line == "" {
+			continue
+		}
+		parts := strings.Split(line, ",")
+		if len(parts) >= 2 {
+			datePart := strings.TrimSpace(parts[0])
+			namePart := strings.TrimSpace(parts[1])
+
+			// 2026.03.02 -> 2026-03-02 로 변환
+			datePart = strings.ReplaceAll(datePart, ".", "-")
+			holidays[datePart] = namePart
+		}
+	}
+	return holidays
 }
 
 // SaveOrUpdateNoteByDate: 날짜를 기준으로 메모를 저장하거나 업데이트합니다.

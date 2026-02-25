@@ -18,6 +18,10 @@ export function GetNotesByMonth(arg1) {
   return window['go']['main']['App']['GetNotesByMonth'](arg1);
 }
 
+export function LoadCustomHolidays() {
+  return window['go']['main']['App']['LoadCustomHolidays']();
+}
+
 export function OpenURL(arg1) {
   return window['go']['main']['App']['OpenURL'](arg1);
 }

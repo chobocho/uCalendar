@@ -10,6 +10,8 @@ export function GetNoteByDate(arg1:string):Promise<main.Note>;
 
 export function GetNotesByMonth(arg1:string):Promise<Array<main.Note>>;
 
+export function LoadCustomHolidays():Promise<Record<string, string>>;
+
 export function OpenURL(arg1:string):Promise<void>;
 
 export function Quit():Promise<void>;

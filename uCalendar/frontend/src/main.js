@@ -12,6 +12,7 @@ import { TooltipManager } from './tooltip.js';
 import { SearchPanel } from './search-panel.js';
 import { NoteSearchUI } from './note-search.js';
 import { DataManager } from './data-manager.js';
+import { HolidaysManager } from './holidays.js';
 import { Modal } from './modal.js';
 import './theme.js';
 import './notepad.js';
@@ -59,10 +60,11 @@ window.onload = () => {
     WailsRuntime.waitForReady(initApp);
 };
 
-function initApp() {
+async function initApp() {
     CanvasRenderer.resize();
     SearchPanel.setup();
     NoteSearchUI.setup();
+    await HolidaysManager.loadCustomHolidays();
     DataManager.refreshAllNotes();
     CalendarRenderer.render();
 }
