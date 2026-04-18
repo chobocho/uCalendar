@@ -99,7 +99,18 @@ export const SearchPanel = {
             const content = (note.content && note.content.startsWith('!')) ? note.content.substring(1) : note.content;
             contentSpan.textContent = content || '';
 
-            li.append(dateSpan, contentSpan);
+            const copyBtn = document.createElement('button');
+            copyBtn.className = 'search-item-copy-btn';
+            copyBtn.textContent = '📋';
+            copyBtn.title = '복사';
+            copyBtn.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                await navigator.clipboard.writeText(`${note.date}: ${content || ''}`);
+                copyBtn.textContent = '✅';
+                setTimeout(() => { copyBtn.textContent = '📋'; }, 1500);
+            });
+
+            li.append(dateSpan, contentSpan, copyBtn);
             state.elements.searchResults.appendChild(li);
         });
     },
