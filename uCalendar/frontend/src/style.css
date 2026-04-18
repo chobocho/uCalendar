@@ -399,6 +399,17 @@ body.dark-theme .form-group textarea:focus {
     -webkit-app-region: no-drag;
 }
 
+.search-copy-btn {
+    height: 28px;
+    width: 28px;
+    border-radius: 6px;
+    border: 1px solid var(--search-border);
+    background: transparent;
+    color: var(--search-text);
+    cursor: pointer;
+    -webkit-app-region: no-drag;
+}
+
 .search-results {
     margin: 0;
     padding: 0;

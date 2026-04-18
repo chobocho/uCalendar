@@ -12,6 +12,7 @@ export const SearchPanel = {
         state.elements.searchInput = document.getElementById('searchInput');
         state.elements.searchResults = document.getElementById('searchResults');
         state.elements.searchEmpty = document.getElementById('searchEmpty');
+        state.elements.searchCopyBtn = document.getElementById('searchCopyBtn');
 
         if (!state.elements.searchPanel || !state.elements.searchInput ||
             !state.elements.searchResults || !state.elements.searchEmpty) return;
@@ -27,6 +28,10 @@ export const SearchPanel = {
         const closeBtn = document.getElementById('searchCloseBtn');
         if (closeBtn) {
             closeBtn.addEventListener('click', () => this.hide());
+        }
+
+        if (state.elements.searchCopyBtn) {
+            state.elements.searchCopyBtn.addEventListener('click', () => this.copyResults());
         }
     },
 
@@ -78,6 +83,7 @@ export const SearchPanel = {
 
         state.elements.searchResults.innerHTML = '';
         state.elements.searchEmpty.classList.add('hidden');
+        if (state.elements.searchCopyBtn) state.elements.searchCopyBtn.classList.remove('hidden');
 
         results.forEach((note) => {
             const li = document.createElement('li');
@@ -102,6 +108,27 @@ export const SearchPanel = {
         state.elements.searchResults.innerHTML = '';
         state.elements.searchEmpty.textContent = message;
         state.elements.searchEmpty.classList.remove('hidden');
+        if (state.elements.searchCopyBtn) state.elements.searchCopyBtn.classList.add('hidden');
+    },
+
+    async copyResults() {
+        const items = state.elements.searchResults.querySelectorAll('li[data-date]');
+        if (!items.length) return;
+
+        const text = Array.from(items)
+            .map(li => {
+                const date = li.querySelector('.search-result-date')?.textContent || '';
+                const content = li.querySelector('.search-result-content')?.textContent || '';
+                return `${date}: ${content}`;
+            })
+            .join('\n');
+
+        await navigator.clipboard.writeText(text);
+
+        const btn = state.elements.searchCopyBtn;
+        const original = btn.textContent;
+        btn.textContent = '✅';
+        setTimeout(() => { btn.textContent = original; }, 1500);
     }
 };
 
